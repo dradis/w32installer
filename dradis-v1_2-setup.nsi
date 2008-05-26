@@ -18,6 +18,7 @@
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Welcome page
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 1.2. \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "dradis-v1.2\LICENSE.txt"
@@ -28,12 +29,15 @@
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\AppMainExe.exe"
+#!define MUI_FINISHPAGE_RUN "$INSTDIR\AppMainExe.exe"
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
+
+!define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis client\r\n - dradis server\r\n \r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually."
+!insertmacro MUI_UNPAGE_FINISH
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
@@ -1852,11 +1856,11 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+  #MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
 FunctionEnd
 
 Function un.onInit
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove the dradis client and server?" IDYES +2
   Abort
 FunctionEnd
 
