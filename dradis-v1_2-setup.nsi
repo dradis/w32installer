@@ -18,6 +18,7 @@
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Welcome page
+# this is the text to be displayed at the start of installation
 !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 1.2. \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
@@ -36,6 +37,7 @@
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
 
+# this is the text to be displayed to the user at the end of uninstallation
 !define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis client\r\n - dradis server\r\n \r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually."
 !insertmacro MUI_UNPAGE_FINISH
 
@@ -51,6 +53,12 @@ InstallDir "$PROGRAMFILES\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
 
+Section
+  # create the start menu folder
+  SetOutPath "$INSTDIR"
+  CreateDirectory "$SMPROGRAMS\dradis"
+SectionEnd
+
 Section "ruby" SEC01
   #SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
@@ -60,15 +68,10 @@ Section "ruby" SEC01
   #CreateShortCut "$DESKTOP\dradis.lnk" "$INSTDIR\AppMainExe.exe"
 SectionEnd
 
-Section
-  # create the start menu folder
-  SetOutPath "$INSTDIR"
-  CreateDirectory "$SMPROGRAMS\dradis"
-SectionEnd
-
 Section "wxruby" SEC02
   SetOutPath "$INSTDIR\client"
   File "wxruby-1.9.4-i386-mswin32.gem"
+  # check if ruby is installed and install the wxruby gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +3
   MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the wxruby (version 1.9.4) gem manually"
@@ -85,6 +88,7 @@ Section "sqlite" SEC03
   File "sqlite3.dll"
   SetOutPath "$INSTDIR"
   File "sqlite3-ruby-1.2.1-mswin32.gem"
+  # check if ruby is installed and install the sqlite3-ruby gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +3
   MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.2.1) gem manually"
@@ -1820,7 +1824,7 @@ Section "dradis client" SEC05
   IfErrors 0 +3
   MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
   goto endClientInstall
-  # create a shortcut to start the dradis server from the start menu
+  # create a shortcut to start the dradis client from the start menu
   CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
   CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
 endClientInstall:
