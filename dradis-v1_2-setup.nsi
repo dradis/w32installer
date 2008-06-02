@@ -79,12 +79,23 @@ Section
 SectionEnd
 
 Section "ruby" SEC01
-  #SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  #File "..\..\..\..\..\path\to\file\AppMainExe.exe"
-  #CreateDirectory "$SMPROGRAMS\dradis"
-  #CreateShortCut "$SMPROGRAMS\dradis\dradis.lnk" "$INSTDIR\AppMainExe.exe"
-  #CreateShortCut "$DESKTOP\dradis.lnk" "$INSTDIR\AppMainExe.exe"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  IfErrors 0 +2
+  Goto continueRubyInstall
+  MessageBox MB_YESNO "Ruby is already installed on this machine, do you want to continue with installing a new version?" IDNO endRubyInstall
+continueRubyInstall:
+  NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/29263/ruby186-26.exe" "ruby186-26.exe"
+  Pop $R0 ;Get the return value
+  StrCmp $R0 "success" +3
+  MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
+  Goto endRubyInstall
+  ExecWait '"ruby186-26.exe"' $0
+  IfErrors 0 +2
+  MessageBox MB_OK "Ruby install failed. Please install Ruby manually"
+  Delete "ruby186-26.exe"
+  Goto endRubyInstall
+endRubyInstall:
 SectionEnd
 
 Section "wxruby" SEC02
