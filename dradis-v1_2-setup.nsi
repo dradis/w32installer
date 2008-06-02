@@ -78,9 +78,9 @@ Section
   CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$WINDIR\system32"
   # check if the two required dll's are present. copy them to system32 if not.
-  IfFileExists "$WINDIR\system32\MSVCP71.DLL" 0 +2
+  IfFileExists $SYSDIR\MSVCP71.DLL +2 0
   File "MSVCP71.DLL"
-  IfFileExists "$WINDIR\system32\msvcr71.dll" 0 +2
+  IfFileExists $SYSDIR\msvcr71.dll +2 0
   File "msvcr71.dll"
   Goto endSection
 endSection:
@@ -90,10 +90,9 @@ Section "ruby" SEC01
   SetOverwrite ifnewer
   # check if there is an installed version of ruby and prompt the user if he wants to install ruby if already present
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  IfErrors 0 +2
-  Goto continueRubyInstall
+  IfErrors 0 +1 # very sneaky trick to clear the error bit
+  IfErrors +2 0
   MessageBox MB_YESNO "Ruby is already installed on this machine, do you want to continue with installing a new version?" IDNO endRubyInstall
-continueRubyInstall:
   # down load and install ruby
   NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/29263/ruby186-26.exe" "ruby186-26.exe"
   Pop $R0 ;Get the return value
@@ -1772,7 +1771,7 @@ Section "dradis server" SEC04
   File "dradis-v1.2\server\vendor\rails\railties\README"
   # determine the ruby install directory
   SetOutPath "$INSTDIR\server"
-  IfErrors 0 +1
+  IfErrors 0 +1 # very sneaky trick to clear the error bit
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +3
   MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis server will not be created. Start the server from the commandline: ruby $INSTDIR\server\script\server -p 3004. Instantiate the database manually from the commandline: $INSTDIR\server\rake db:migrate"
@@ -1860,6 +1859,7 @@ Section "dradis client" SEC05
   File "dradis-v1.2\client\ui\wx.rb"
   # determine the ruby install directory
   SetOutPath "$INSTDIR\client"
+  IfErrors 0 +1 # very sneaky trick to clear the error bit
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +3
   MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
