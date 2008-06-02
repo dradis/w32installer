@@ -76,15 +76,25 @@ Section
   SetOutPath "$INSTDIR"
   File "readme.txt"
   CreateDirectory "$SMPROGRAMS\dradis"
+  SetOutPath "$WINDIR\system32"
+  # check if the two required dll's are present. copy them to system32 if not.
+  IfFileExists "$WINDIR\system32\MSVCP71.DLL" 0 +2
+  File "MSVCP71.DLL"
+  IfFileExists "$WINDIR\system32\msvcr71.dll" 0 +2
+  File "msvcr71.dll"
+  Goto endSection
+endSection:
 SectionEnd
 
 Section "ruby" SEC01
   SetOverwrite ifnewer
+  # check if there is an installed version of ruby and prompt the user if he wants to install ruby if already present
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +2
   Goto continueRubyInstall
   MessageBox MB_YESNO "Ruby is already installed on this machine, do you want to continue with installing a new version?" IDNO endRubyInstall
 continueRubyInstall:
+  # down load and install ruby
   NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/29263/ruby186-26.exe" "ruby186-26.exe"
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +3
