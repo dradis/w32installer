@@ -89,8 +89,8 @@ SectionEnd
 Section "ruby" SEC01
   SetOverwrite ifnewer
   # check if there is an installed version of ruby and prompt the user if he wants to install ruby if already present
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors 0 +1 # very sneaky trick to clear the error bit
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   IfErrors +2 0
   MessageBox MB_YESNO "Ruby is already installed on this machine, do you want to continue with installing a new version?" IDNO endRubyInstall
   # down load and install ruby
