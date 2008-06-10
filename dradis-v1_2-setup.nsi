@@ -120,6 +120,7 @@ Section "wxruby" SEC02
   StrCmp $0 "0" endWXrubyInstall
   MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.4) gem manually"
 endWXrubyInstall:
+  Delete "wxruby-1.9.4-i386-mswin32.gem"
 SectionEnd
 
 Section "sqlite" SEC03
@@ -137,6 +138,7 @@ Section "sqlite" SEC03
   StrCmp $0 "0" endSqliteInstall
   MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.2.1) gem manually"
 endSqliteInstall:
+  Delete "sqlite3-ruby-1.2.1-mswin32.gem"
 SectionEnd
 
 Section "dradis server" SEC04
@@ -1781,7 +1783,11 @@ Section "dradis server" SEC04
   IfErrors 0 +2
   MessageBox MB_OK "Could not migrate database"
   # create a shortcut to start the dradis server from the start menu
-  CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server" -p 3004'
+  #CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server" -p 3004'
+  #CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe -C\"C:\Program Files\dradis\client\" \"$INSTDIR\server\script\server\" -p 3004"'
+  #CreateShortCut "$INSTDIR\start dradis server.lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe -C\"C:\Program Files\dradis\client\" \"$INSTDIR\server\script\server\" -p 3004"'
+  CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe \"$INSTDIR\server\script\server\" -p 3004"'
+  CreateShortCut "$INSTDIR\start dradis server.lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe \"$INSTDIR\server\script\server\" -p 3004"'
 endServerInstall:
 SectionEnd
 
@@ -1867,6 +1873,11 @@ Section "dradis client" SEC05
   # create a shortcut to start the dradis client from the start menu
   CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
   CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+  
+  CreateShortCut "$INSTDIR\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
+  CreateShortCut "$INSTDIR\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+  #CreateShortCut "$INSTDIR\start client (command line).lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe -C\"C:\Program Files\dradis\client\" \"$INSTDIR\client\dradis.rb\""'
+  #CreateShortCut "$INSTDIR\start client (graphical).lnk" "$SYSDIR\runas.exe" '/user:administrator "$0\bin\ruby.exe -C\"C:\Program Files\dradis\client\" \"$INSTDIR\client\dradis.rb\" -g"'
 endClientInstall:
 SectionEnd
 
@@ -1969,6 +1980,7 @@ Section Uninstall
   Delete "$INSTDIR\client\commands\dispatchers\namespace.rb"
   Delete "$INSTDIR\client\commands\dispatcher.rb"
   Delete "$INSTDIR\client\CHANGELOG"
+  Delete "$INSTDIR\client"
   Delete "$INSTDIR\server\vendor\rails\railties\README"
   Delete "$INSTDIR\server\vendor\rails\railties\Rakefile"
   Delete "$INSTDIR\server\vendor\rails\railties\MIT-LICENSE"
@@ -3265,7 +3277,9 @@ Section Uninstall
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
   Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
   Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
-  
+  Delete "$INSTDIR\start dradis server.lnk"
+  Delete "$INSTDIR\start client (command line).lnk"
+  Delete "$INSTDIR\start client (graphical).lnk"
   
   RMDir "$WINDIR\system32"
   RMDir "$SMPROGRAMS\dradis"
