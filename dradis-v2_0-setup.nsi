@@ -101,10 +101,6 @@ Section "ruby" SEC01
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
     ${EndIf}
   ${EndIf}
-
-  ;SetOutPath "$INSTDIR"
-  ;SetOverwrite ifnewer
-  ;File "extra_docs\readme.txt"
 SectionEnd
 
 Section "wxruby" SEC02
@@ -154,6 +150,14 @@ Section "sqlite3" SEC03
   Delete "sqlite3-ruby-1.2.3-mswin32.gem"
 SectionEnd
 
+Section "client" SEC04
+  !include "client_install.nsh"
+SectionEnd
+
+Section "server" SEC05
+  !include "server_install.nsh"
+SectionEnd
+
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateDirectory "$SMPROGRAMS\dradis"
@@ -175,6 +179,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Install Ruby"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Install wxruby"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Install the client application"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -195,6 +200,9 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\Website.lnk"
+
+  !include "client_uninstall.nsh"
+  !include "server_uninstall.nsh"
 
   RMDir "$SMPROGRAMS\dradis"
   RMDir "$INSTDIR"
