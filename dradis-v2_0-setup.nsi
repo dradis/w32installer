@@ -28,6 +28,9 @@
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
+; inlude logic lib for more readable code logic
+!include LogicLib.nsh
+
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
@@ -62,15 +65,93 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-2.0-installer.exe"
+OutFile "dradis-v2_0-setup.exe"
 InstallDir "$PROGRAMFILES\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
 
+; this section handles the installation of ruby
 Section "ruby" SEC01
+  ClearErrors
+  ; read the registry to check if there is not already a local installation of ruby
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    MessageBox MB_OK 'Ruby is already installed on the system. The automated installation of Ruby will not proceed'
+  ${Else}
+    ; no ruby installer
+    MessageBox MB_OK 'The ruby installer will now be downloaded and executed. This might take a few moments.'
+    ; download and install ruby
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/29263/ruby186-26.exe" "ruby186-26.exe"
+    Pop $R0
+    ${If} $R0 == 'success'
+      ; ruby download successful
+      StrCpy $0 ''
+      ; rum the one click installer
+      ExecWait '"ruby186-26.exe"' $0
+      ${If} $0 == ''
+        ; execution of one click installer failed
+        MessageBox MB_OK "Ruby install failed. Please install Ruby manually"
+      ${EndIf}
+      ; delete the ruby one click installer
+      Delete "ruby186-26.exe"
+    ${Else}
+      Delete "ruby186-26.exe"
+      ; ruby download not successfull
+      MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
+    ${EndIf}
+  ${EndIf}
+
+  ;SetOutPath "$INSTDIR"
+  ;SetOverwrite ifnewer
+  ;File "extra_docs\readme.txt"
+SectionEnd
+
+Section "wxruby" SEC02
+  SetOutPath "$INSTDIR\client"
+  File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
+  # check if ruby is installed and install the wxruby gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the wxruby locally
+    ExecWait '"$0\bin\gem.bat" install wxruby-1.9.9-x86-mswin32-60.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.9) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the wxruby (version 1.9.9) gem manually"
+  ${EndIf}
+  Delete "wxruby-1.9.9-x86-mswin32-60.gem"
+SectionEnd
+
+Section "sqlite3" SEC03
+  ; copies the sqlite dll to the system 32 folder
+  SetOutPath "$WINDIR\system32"
+  File "extra_docs\sqlite3.dll"
+  SetOverwrite off
+  ; sqlite dll is dependant on msvcrt dll
+  File "extra_docs\msvcrt.dll"
+  SetOVerwrite ifnewer
   SetOutPath "$INSTDIR"
-  SetOverwrite ifnewer
-  File "extra_docs\readme.txt"
+  File "extra_docs\sqlite3-ruby-1.2.3-mswin32.gem"
+  # check if ruby is installed and install the gem gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the wxruby locally
+    ExecWait '"$0\bin\gem.bat" install sqlite3-ruby-1.2.3-mswin32.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.2.3) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.2.3) gem manually"
+  ${EndIf}
+  Delete "sqlite3-ruby-1.2.3-mswin32.gem"
 SectionEnd
 
 Section -AdditionalIcons
@@ -92,6 +173,8 @@ SectionEnd
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Install Ruby"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Install wxruby"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
