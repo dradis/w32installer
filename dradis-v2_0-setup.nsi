@@ -152,10 +152,29 @@ SectionEnd
 
 Section "client" SEC04
   !include "client_install.nsh"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+  ${Else}
+    # create a shortcuts to start the dradis client from the start menu
+    CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
+    CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+    # create a shortcuts to start the dradis client in the install directory
+    CreateShortCut "$INSTDIR\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
+    CreateShortCut "$INSTDIR\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+  ${EndIf}
 SectionEnd
 
 Section "server" SEC05
   !include "server_install.nsh"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+  ${Else}
+    # create shortcuts to start the dradis server from the start menu or install directory
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server\"'
+  ${EndIf}
 SectionEnd
 
 Section -AdditionalIcons
@@ -173,6 +192,15 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
+
+Function .onInit
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    ; remove the option to select ruby to be installed
+    SectionSetFlags ${SEC01} ${SF_RO}
+  ${EndIf}
+FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -203,6 +231,7 @@ Section Uninstall
 
   !include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
+  RMDir /r "$INSTDIR\server\tmp"
 
   RMDir "$SMPROGRAMS\dradis"
   RMDir "$INSTDIR"
