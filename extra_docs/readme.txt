@@ -18,6 +18,13 @@ The dradis installation gives the users the option to install the following comp
 - dradis server
 - dradis client
 
+Note when installing as a limited access user:
+The sqlite3 and wxruby gems are dependant on the following dlls to be in the system32: 
+- sqlite3.dll
+- msvcr71.dll
+- msvcp71.dll
+- msvcrt.dll
+
 
 Ruby
 ----
