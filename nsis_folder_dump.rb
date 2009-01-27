@@ -3,15 +3,22 @@ include FileUtils::Verbose
 
 def recursive_folder_dump(folder, install_file, uninstall_file, relative_path)
   cd(folder) {
+    folders = []
     Dir.foreach('.\\') { |inner_file|
       if File.directory?(inner_file) && inner_file != '.' && inner_file != '..'
-        install_file.puts "SetOutPath \"$INSTDIR\\" + relative_path + inner_file + "\""
-        recursive_folder_dump(inner_file, install_file, uninstall_file, relative_path + inner_file + "\\")
-        uninstall_file.puts "RMDir \"$INSTDIR\\" + relative_path + inner_file + "\""
+        #install_file.puts "SetOutPath \"$INSTDIR\\" + relative_path + inner_file + "\""
+        #recursive_folder_dump(inner_file, install_file, uninstall_file, relative_path + inner_file + "\\")
+        #uninstall_file.puts "RMDir \"$INSTDIR\\" + relative_path + inner_file + "\""
+        folders << inner_file
       elsif inner_file != '.' && inner_file != '..'
         install_file.puts "File \"" + relative_path + inner_file + "\""
         uninstall_file.puts "Delete \"$INSTDIR\\" + relative_path + inner_file + "\""
       end
+    }
+    folders.each { |folder|
+      install_file.puts "SetOutPath \"$INSTDIR\\" + relative_path + folder + "\""
+      recursive_folder_dump(folder, install_file, uninstall_file, relative_path + folder + "\\")
+      uninstall_file.puts "RMDir \"$INSTDIR\\" + relative_path + folder + "\""
     }
   }
 end
