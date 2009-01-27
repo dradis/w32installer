@@ -49,8 +49,15 @@
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-;!define MUI_FINISHPAGE_RUN "some_program.exe"
-;!define MUI_FINISHPAGE_RUN_PARAMETERS "some_params"
+Section
+SetOutPath "$INSTDIR\server"
+readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+${If} $0 != ''
+  !define MUI_FINISHPAGE_RUN_TEXT "Initialise the database $0\bin\rake.bat"
+  !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
+  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" db:migrate"
+${EndIf}
+SectionEnd
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
 !insertmacro MUI_PAGE_FINISH
 
@@ -112,6 +119,12 @@ Section "ruby" SEC01
 SectionEnd
 
 Section "wxruby" SEC02
+  SetOutPath "$WINDIR\system32"
+  SetOverwrite off
+  ; dependant dll's
+  File "extra_docs\msvcr71.dll"
+  File "extra_docs\MSVCP71.DLL"
+  SetOVerwrite ifnewer
   SetOutPath "$INSTDIR\client"
   File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
   # check if ruby is installed and install the wxruby gem locally if so
@@ -202,6 +215,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  SetOutPath "$INSTDIR\server"
 SectionEnd
 
 Function .onInit
@@ -260,7 +274,6 @@ Section Uninstall
   RMDir /r "$INSTDIR\server\tmp"
 
   RMDir "$SMPROGRAMS\dradis"
-  RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   SetAutoClose true
