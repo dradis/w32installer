@@ -53,7 +53,7 @@ Section
 SetOutPath "$INSTDIR\server"
 readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
 ${If} $0 != ''
-  !define MUI_FINISHPAGE_RUN_TEXT "Initialise the database $0\bin\rake.bat"
+  !define MUI_FINISHPAGE_RUN_TEXT "Initialise the database"
   !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
   !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" db:migrate"
 ${EndIf}
@@ -225,6 +225,9 @@ Function .onInit
     ; remove the option to select ruby to be installed
     SectionSetFlags ${SEC01} ${SF_RO}
   ${EndIf}
+  IntOp $0 ${SF_SELECTED} | ${SF_RO}
+  SectionSetFlags ${SEC04} $0
+  SectionSetFlags ${SEC05} $0
 FunctionEnd
 
 ; Section descriptions
@@ -267,10 +270,10 @@ Section Uninstall
   SetOutPath "$INSTDIR"
   File "server\db\*"
   Delete "$INSTDIR\schema.rb"
-  RMDir /r "$INSTDIR\client"
-  RMDir /r "$INSTDIR\server"
-  ;!include "client_uninstall.nsh"
-  ;!include "server_uninstall.nsh"
+  ;RMDir /r "$INSTDIR\client"
+  ;RMDir /r "$INSTDIR\server"
+  !include "client_uninstall.nsh"
+  !include "server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
 
   RMDir "$SMPROGRAMS\dradis"
