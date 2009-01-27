@@ -60,6 +60,7 @@
 ; Language files
 # this is the text to be displayed to the user at the end of uninstallation
 !define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis client\r\n - dradis server\r\n \r\nThe the dradis server folder was not removed from the install location.\r\nIt contains the database files that was create since installation.\r\nPlease remove manually.\r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually.\r\n - ruby: uninstall option in the ruby start menu folder\r\n - wxruby: execute 'gem uninstall wxruby' from the command line\r\n - sqlite3: execute 'gem uninstall sqlite3-ruby' from the command line\r\n"
+!insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
 ; MUI end ------
@@ -69,6 +70,13 @@ OutFile "dradis-v2_0-setup.exe"
 InstallDir "$PROGRAMFILES\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
+
+; place the creation of the start menu folder here because we need the folder in the other sections
+Section
+  CreateDirectory "$SMPROGRAMS\dradis"
+  CreateShortCut "$SMPROGRAMS\dradis\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
+SectionEnd
 
 ; this section handles the installation of ruby
 Section "ruby" SEC01
@@ -153,9 +161,10 @@ SectionEnd
 Section "client" SEC04
   !include "client_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 != ''
+  ${If} $0 == ''
     MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
   ${Else}
+    SetOutPath "$INSTDIR\client"
     # create a shortcuts to start the dradis client from the start menu
     CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
     CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
@@ -168,23 +177,25 @@ SectionEnd
 Section "server" SEC05
   !include "server_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 != ''
+  ${If} $0 == ''
     MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
   ${Else}
+    SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
     CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server\"'
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
+    CreateShortCut "$SMPROGRAMS\dradis\create database.lnk" "$0\bin\rake.bat" "db:migrate"
+    CreateShortCut "$INSTDIR\create database.lnk" "$0\bin\rake.bat" "db:migrate"
   ${EndIf}
 SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateDirectory "$SMPROGRAMS\dradis"
-  CreateShortCut "$SMPROGRAMS\dradis\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
+  SetOutPath "$INSTDIR"
+  File "extra_docs\readme.txt"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -204,16 +215,17 @@ FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Install Ruby"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Install wxruby"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Install the client application"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs ruby. The installer will download the ruby one click installer and execute. Alternatively you can install ruby manually."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client application."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server application."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+  ;MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
 FunctionEnd
 
 Function un.onInit
@@ -228,9 +240,23 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\Website.lnk"
+  
+  Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
+  Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
+  Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
+  Delete "$SMPROGRAMS\dradis\create database.lnk"
+  Delete "$INSTDIR\start dradis server.lnk"
+  Delete "$INSTDIR\start client (command line).lnk"
+  Delete "$INSTDIR\start client (graphical).lnk"
+  Delete "$INSTDIR\create database.lnk"
 
-  !include "client_uninstall.nsh"
-  !include "server_uninstall.nsh"
+  SetOutPath "$INSTDIR"
+  File "server\db\*"
+  Delete "$INSTDIR\schema.rb"
+  RMDir /r "$INSTDIR\client"
+  RMDir /r "$INSTDIR\server"
+  ;!include "client_uninstall.nsh"
+  ;!include "server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
 
   RMDir "$SMPROGRAMS\dradis"
