@@ -58,7 +58,7 @@ ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" db:migrate"
 ${EndIf}
 SectionEnd
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -74,12 +74,15 @@ SectionEnd
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "dradis-v2_0-setup.exe"
-InstallDir "$PROGRAMFILES\dradis"
+InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
 
 ; place the creation of the start menu folder here because we need the folder in the other sections
 Section
+  CreateDirectory "$SMPROGRAMS\dradis"
+  SetOutPath "$INSTDIR\dlls"
+  File "extra_docs\README.dlls.txt"
   CreateDirectory "$SMPROGRAMS\dradis"
   CreateShortCut "$SMPROGRAMS\dradis\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
   CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
@@ -125,6 +128,10 @@ Section "wxruby" SEC02
   File "extra_docs\msvcr71.dll"
   File "extra_docs\MSVCP71.DLL"
   SetOVerwrite ifnewer
+  
+  SetOutPath "$INSTDIR\dlls"
+  File "extra_docs\msvcr71.dll"
+  File "extra_docs\MSVCP71.DLL"
   SetOutPath "$INSTDIR\client"
   File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
   # check if ruby is installed and install the wxruby gem locally if so
@@ -152,7 +159,9 @@ Section "sqlite3" SEC03
   ; sqlite dll is dependant on msvcrt dll
   File "extra_docs\msvcrt.dll"
   SetOVerwrite ifnewer
-  SetOutPath "$INSTDIR"
+  SetOutPath "$INSTDIR\dlls"
+  File "extra_docs\sqlite3.dll"
+  File "extra_docs\msvcrt.dll"
   File "extra_docs\sqlite3-ruby-1.2.3-mswin32.gem"
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
@@ -208,7 +217,7 @@ SectionEnd
 
 Section -Post
   SetOutPath "$INSTDIR"
-  File "extra_docs\readme.txt"
+  File "extra_docs\README.txt"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -253,7 +262,7 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\readme.txt"
+  Delete "$INSTDIR\README.txt"
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\Website.lnk"
@@ -275,7 +284,7 @@ Section Uninstall
   !include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
-
+  RMDir /r "$INSTDIR\dlls"
   RMDir "$SMPROGRAMS\dradis"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
