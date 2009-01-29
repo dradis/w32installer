@@ -14,7 +14,7 @@ Please query the website for information and documentation on the system.
 The dradis installation gives the users the option to install the following components:
 - Ruby
 - wxruby gem (the installation of the gem is dependant on a ruby installation)
-- sqlite3 files and sqlite3-ruby gem
+- sqlite3 files and sqlite3-ruby gem 
 - dradis server
 - dradis client
 
@@ -24,7 +24,9 @@ The sqlite3 and wxruby gems are dependant on the following dlls to be in the sys
 - msvcr71.dll
 - msvcp71.dll
 - msvcrt.dll
-
+If installer did not have access to the system32 then these files need to be copied 
+manually. Simply copy them from the dradis install directory to the $windows\system32 
+folder.
 
 Ruby
 ----
@@ -66,7 +68,6 @@ Uninstall
 The uninstaller removes the dradis client and the dradis server from the 
 local system. Because other applications might be dependent on the gems or 
 the Sqlite3.dll it is left to the user to remove these manually. This can be done with by following these steps:
-- delete sqlite3.dll from the $WINDOWS/system32 folder
 - run "gem uninstall sqlite3-ruby" in the command line
 - run "gem uninstall wxruby" in the command line
 
