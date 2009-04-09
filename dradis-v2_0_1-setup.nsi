@@ -264,6 +264,7 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\CHANGELOG"
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\Website.lnk"
