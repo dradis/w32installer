@@ -41,7 +41,7 @@
 !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.1. \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "extra_docs\licence.txt"
+!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENCE"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -58,7 +58,7 @@ ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" db:migrate"
 ${EndIf}
 SectionEnd
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -217,7 +217,7 @@ SectionEnd
 
 Section -Post
   SetOutPath "$INSTDIR"
-  File "extra_docs\README.txt"
+  File "extra_docs\readme.txt"
   File "extra_docs\CHANGELOG"
   File "extra_docs\RELEASE_NOTES"
   WriteUninstaller "$INSTDIR\uninst.exe"
@@ -264,7 +264,7 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\CHANGELOG"
   Delete "$INSTDIR\RELEASE_NOTES"
   
