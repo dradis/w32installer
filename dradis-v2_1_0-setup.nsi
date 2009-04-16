@@ -41,7 +41,7 @@
 !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.1. \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENCE"
+!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
