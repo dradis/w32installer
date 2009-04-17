@@ -1,4 +1,4 @@
-Dradis version 2.0 installation
+Dradis version 2.1 installation
 -------------------------------
 
 General Information
@@ -72,4 +72,4 @@ the Sqlite3.dll it is left to the user to remove these manually. This can be don
 - run "gem uninstall wxruby" in the command line
 
 
-26 January 2008 - Siebert Lubbe (siebertlubbe at googlemail dot com)
+17 April 2008
