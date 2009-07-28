@@ -19,7 +19,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.1.1"
+!define PRODUCT_VERSION "2.3"
 !define PRODUCT_PUBLISHER "dradis software"
 !define PRODUCT_WEB_SITE "http://dradis.sourceforge.net"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -38,7 +38,7 @@
 
 ; Welcome page
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.1.1 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.3 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE"
@@ -73,7 +73,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.1.1-setup.exe"
+OutFile "dradis-v2.3.0-setup.exe"
 InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -206,8 +206,23 @@ Section "server" SEC05
     # create shortcuts to start the dradis server from the start menu or install directory
     CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
     CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
-    CreateShortCut "$SMPROGRAMS\dradis\create database.lnk" "$0\bin\rake.bat" "db:migrate"
-    CreateShortCut "$INSTDIR\create database.lnk" "$0\bin\rake.bat" "db:migrate"
+    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
+    CreateShortCut "$INSTDIR\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
+  ${EndIf}
+SectionEnd
+
+Section "Meta-Server" SEC06
+  !include "meta-server_install.nsh"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 == ''
+    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+  ${Else}
+    SetOutPath "$INSTDIR\meta-server"
+    # create shortcuts to start the dradis meta-server from the start menu or install directory
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis meta-server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
+    CreateShortCut "$INSTDIR\start dradis meta-server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
+    CreateShortCut "$SMPROGRAMS\dradis\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
+    CreateShortCut "$INSTDIR\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
   ${EndIf}
 SectionEnd
 
@@ -220,6 +235,8 @@ Section -Post
   File "extra_docs\readme.txt"
   File "extra_docs\CHANGELOG"
   File "extra_docs\RELEASE_NOTES"
+  File "extra_docs\LICENSE"
+  File "extra_docs\LICENSE.logo"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -237,17 +254,22 @@ Function .onInit
     SectionSetFlags ${SEC01} ${SF_RO}
   ${EndIf}
   IntOp $0 ${SF_SELECTED} | ${SF_RO}
+  SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
+
+  ; don't install the Meta-Server by default
+  SectionSetFlags ${SEC06} 0
 FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs ruby. The installer will download the ruby one click installer and execute. Alternatively you can install ruby manually."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client application."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server application."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -267,19 +289,26 @@ Section Uninstall
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\CHANGELOG"
   Delete "$INSTDIR\RELEASE_NOTES"
-  
+  Delete "$INSTDIR\LICENSE"
+  Delete "$INSTDIR\LICENSE.logo"
+
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\Website.lnk"
   
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
   Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
   Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
-  Delete "$SMPROGRAMS\dradis\create database.lnk"
+  Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
+  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
+  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
+    
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\start client (command line).lnk"
   Delete "$INSTDIR\start client (graphical).lnk"
-  Delete "$INSTDIR\create database.lnk"
-
+  Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
+  Delete "$INSTDIR\create meta-server database.lnk"
+  Delete "$INSTDIR\start dradis meta-server.lnk"
+  
   SetOutPath "$INSTDIR"
   File "server\db\*"
   Delete "$INSTDIR\schema.rb"
@@ -287,6 +316,7 @@ Section Uninstall
   ;RMDir /r "$INSTDIR\server"
   !include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
+  !include "meta-server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\dlls"
   RMDir "$SMPROGRAMS\dradis"
