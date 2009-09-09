@@ -330,6 +330,7 @@ Section Uninstall
   !include "meta-server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\dlls"
+  RMDir /r "$INSTDIR\images"
   RMDir "$SMPROGRAMS\dradis"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
