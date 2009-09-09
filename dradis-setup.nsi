@@ -295,7 +295,7 @@ FunctionEnd
 
 Section Uninstall
   Delete "$INSTDIR\dradisframework.org.url"
-  Delete "$INSTDIR\dradis web interface.org.url"
+  Delete "$INSTDIR\dradis web interface.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\CHANGELOG"
