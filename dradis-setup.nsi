@@ -62,6 +62,9 @@ ${If} $0 != ''
 ${EndIf}
 SectionEnd
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
+!define MUI_FINISHPAGE_LINK "dradisframework.org"
+!define MUI_FINISHPAGE_LINK_LOCATION "http://dradisframework.org"
+!define MUI_FINISHPAGE_LINK_COLOR "0000FF"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -235,8 +238,6 @@ SectionEnd
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "URL" "https://127.0.0.1:3004"
-  WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "IconIndex" "0"
-  WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "IconFile" "$INSTDIR\images\dradis.ico"
 SectionEnd
 
 Section -Post
