@@ -21,7 +21,7 @@
 !define PRODUCT_NAME "dradis"
 !define PRODUCT_VERSION "2.3"
 !define PRODUCT_PUBLISHER "dradis software"
-!define PRODUCT_WEB_SITE "http://dradis.sourceforge.net"
+!define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
@@ -34,10 +34,12 @@
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "images\dradis.ico"
-;!define MUI_ICON "C:\Program Files\NSIS\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNICON "images\dradis_uninstall.ico"
 
 ; Welcome page
+# this is the image file that is displayed to the left of the welcome pages
+!define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
 !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.3 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
@@ -84,6 +86,9 @@ Section
   CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$INSTDIR\dlls"
   File "extra_docs\README.dlls.txt"
+  CreateDirectory "$INSTDIR\images"
+  SetOutPath "$INSTDIR\images"
+  File "images\dradis.ico"
   CreateDirectory "$SMPROGRAMS\dradis"
   CreateShortCut "$SMPROGRAMS\dradis\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
   CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
@@ -228,7 +233,10 @@ Section "Meta-Server" SEC06
 SectionEnd
 
 Section -AdditionalIcons
-  WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+  WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+  WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "URL" "https://127.0.0.1:3004"
+  WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "IconIndex" "0"
+  WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "IconFile" "$INSTDIR\images\dradis.ico"
 SectionEnd
 
 Section -Post
@@ -285,7 +293,8 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
-  Delete "$INSTDIR\${PRODUCT_NAME}.url"
+  Delete "$INSTDIR\dradisframework.org.url"
+  Delete "$INSTDIR\dradis web interface.org.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\CHANGELOG"
