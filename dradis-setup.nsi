@@ -149,7 +149,7 @@ Section "wxruby" SEC02
     ; ruby installed
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install wxruby-1.9.9-x86-mswin32-60.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri wxruby-1.9.9-x86-mswin32-60.gem' $1
     ${If} $1 == ''
       MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.9) gem manually"
     ${EndIf}
@@ -178,7 +178,7 @@ Section "sqlite3" SEC03
     ; ruby installed
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install sqlite3-ruby-1.2.3-mswin32.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.2.3-mswin32.gem' $1
     ${If} $1 == ''
       MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.2.3) gem manually"
     ${EndIf}
