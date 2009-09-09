@@ -62,7 +62,7 @@ ${If} $0 != ''
 ${EndIf}
 SectionEnd
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
-!define MUI_FINISHPAGE_LINK "dradisframework.org"
+!define MUI_FINISHPAGE_LINK "http://dradisframework.org"
 !define MUI_FINISHPAGE_LINK_LOCATION "http://dradisframework.org"
 !define MUI_FINISHPAGE_LINK_COLOR "0000FF"
 !insertmacro MUI_PAGE_FINISH
@@ -93,7 +93,7 @@ Section
   SetOutPath "$INSTDIR\images"
   File "images\dradis.ico"
   CreateDirectory "$SMPROGRAMS\dradis"
-  CreateShortCut "$SMPROGRAMS\dradis\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\dradis\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
   CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
@@ -304,7 +304,7 @@ Section Uninstall
   Delete "$INSTDIR\LICENSE.logo"
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
-  Delete "$SMPROGRAMS\dradis\Website.lnk"
+  Delete "$SMPROGRAMS\dradis\dradisframework.org.lnk"
   
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
   Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
