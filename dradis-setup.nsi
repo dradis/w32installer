@@ -220,20 +220,20 @@ Section "server" SEC05
   ${EndIf}
 SectionEnd
 
-Section "Meta-Server" SEC06
-  !include "meta-server_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 == ''
-    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
-  ${Else}
-    SetOutPath "$INSTDIR\meta-server"
-    # create shortcuts to start the dradis meta-server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis meta-server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
-    CreateShortCut "$INSTDIR\start dradis meta-server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
-    CreateShortCut "$SMPROGRAMS\dradis\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
-    CreateShortCut "$INSTDIR\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
-  ${EndIf}
-SectionEnd
+;Section "Meta-Server" SEC06
+;  !include "meta-server_install.nsh"
+;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+;  ${If} $0 == ''
+;    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+;  ${Else}
+;    SetOutPath "$INSTDIR\meta-server"
+;    # create shortcuts to start the dradis meta-server from the start menu or install directory
+;    CreateShortCut "$SMPROGRAMS\dradis\start dradis meta-server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
+;    CreateShortCut "$INSTDIR\start dradis meta-server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
+;    CreateShortCut "$SMPROGRAMS\dradis\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
+;    CreateShortCut "$INSTDIR\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
+;  ${EndIf}
+;SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
@@ -269,7 +269,7 @@ Function .onInit
   SectionSetFlags ${SEC05} $0
 
   ; don't install the Meta-Server by default
-  SectionSetFlags ${SEC06} 0
+;  SectionSetFlags ${SEC06} 0
 FunctionEnd
 
 ; Section descriptions
@@ -279,7 +279,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -310,15 +310,15 @@ Section Uninstall
   Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
   Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
   Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
-  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
-  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
+;  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
+;  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
     
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\start client (command line).lnk"
   Delete "$INSTDIR\start client (graphical).lnk"
   Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
-  Delete "$INSTDIR\create meta-server database.lnk"
-  Delete "$INSTDIR\start dradis meta-server.lnk"
+;  Delete "$INSTDIR\create meta-server database.lnk"
+;  Delete "$INSTDIR\start dradis meta-server.lnk"
   
   SetOutPath "$INSTDIR"
   File "server\db\*"
@@ -327,7 +327,7 @@ Section Uninstall
   ;RMDir /r "$INSTDIR\server"
   !include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
-  !include "meta-server_uninstall.nsh"
+;  !include "meta-server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\dlls"
   RMDir /r "$INSTDIR\images"
