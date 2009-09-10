@@ -94,6 +94,7 @@ Section
   File "images\dradis.ico"
   CreateDirectory "$SMPROGRAMS\dradis"
   CreateShortCut "$SMPROGRAMS\dradis\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
+  CreateShortCut "$SMPROGRAMS\dradis\dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
   CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
@@ -305,6 +306,7 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\dradisframework.org.lnk"
+  Delete "$SMPROGRAMS\dradis\dradis web interface.lnk"
   
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
   Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
