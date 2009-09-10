@@ -19,7 +19,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.3"
+!define PRODUCT_VERSION "2.4"
 !define PRODUCT_PUBLISHER "dradis software"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -41,7 +41,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.3 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.4 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE"
@@ -79,7 +79,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.3.0-setup.exe"
+OutFile "dradis-v2.4.0-setup.exe"
 InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
