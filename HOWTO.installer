@@ -24,8 +24,8 @@ $ svn export https://dradis.svn.sourceforge.net/svnroot/dradis/CHANGELOG
 
 2.2 Open the NSIS script and change the version number in the following locations:
 - line 22 - !define PRODUCT_VERSION "x.y.z"
-- line 41 - !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version x.y.z
-- line 76 - OutFile "dradis-vx_y_x-setup.exe"
+- line 44 - !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version x.y.z
+- line 82 - OutFile "dradis-vx.y.x-setup.exe"
 
 2.3 If the gem versions of wxruby or sqlite needs to be update then the version numbers needs to be updated in the "wxruby" or "sqlite" sections. Also update the file names in the uninstall sections.
 
