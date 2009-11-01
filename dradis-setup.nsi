@@ -19,8 +19,8 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.4"
-!define PRODUCT_PUBLISHER "dradis software"
+!define PRODUCT_VERSION "2.4.1"
+!define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -41,10 +41,10 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.4 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.4.1 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE.txt"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -79,7 +79,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.4.0-setup.exe"
+OutFile "dradis-v2.4.1-setup.exe"
 InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -131,7 +131,7 @@ Section "ruby" SEC01
   ${EndIf}
 SectionEnd
 
-Section "wxruby" SEC02
+Section "Graphical Library (wxruby 1.9.9)" SEC02
   SetOutPath "$WINDIR\system32"
   SetOverwrite off
   ; dependant dll's
@@ -161,7 +161,7 @@ Section "wxruby" SEC02
   Delete "wxruby-1.9.9-x86-mswin32-60.gem"
 SectionEnd
 
-Section "sqlite3" SEC03
+Section "Database Layer (sqlite3 1.2.3)" SEC03
   ; copies the sqlite dll to the system 32 folder
   SetOutPath "$WINDIR\system32"
   File "extra_docs\sqlite3.dll"
@@ -190,7 +190,7 @@ Section "sqlite3" SEC03
   Delete "sqlite3-ruby-1.2.3-mswin32.gem"
 SectionEnd
 
-Section "client" SEC04
+Section "Dradis Client" SEC04
   !include "client_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 == ''
@@ -206,7 +206,7 @@ Section "client" SEC04
   ${EndIf}
 SectionEnd
 
-Section "server" SEC05
+Section "Dradis Server" SEC05
   !include "server_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 == ''
@@ -236,6 +236,26 @@ SectionEnd
 ;  ${EndIf}
 ;SectionEnd
 
+Section "Rake 0.8.7" SEC06
+  SetOutPath "$INSTDIR\client"
+  File "extra_docs\rake-0.8.7.gem"
+  # check if ruby is installed and install the wxruby gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the wxruby locally
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
+  ${EndIf}
+  Delete "rake-0.8.7.gem"
+SectionEnd
+
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "URL" "https://127.0.0.1:3004"
@@ -244,10 +264,10 @@ SectionEnd
 Section -Post
   SetOutPath "$INSTDIR"
   File "extra_docs\readme.txt"
-  File "extra_docs\CHANGELOG"
-  File "extra_docs\RELEASE_NOTES"
-  File "extra_docs\LICENSE"
-  File "extra_docs\LICENSE.logo"
+  File "extra_docs\CHANGELOG.txt"
+  File "extra_docs\RELEASE_NOTES.txt"
+  File "extra_docs\LICENSE.txt"
+  File "extra_docs\LICENSE.logo.txt"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -268,6 +288,7 @@ Function .onInit
   SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
+  SectionSetFlags ${SEC06} $0
 
   ; don't install the Meta-Server by default
 ;  SectionSetFlags ${SEC06} 0
@@ -275,12 +296,13 @@ FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs ruby. The installer will download the ruby one click installer and execute. Alternatively you can install ruby manually."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Updates the internal rake library of Ruby. Dradis requires a newer version to the one shipped with the Ruby installer."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -299,10 +321,10 @@ Section Uninstall
   Delete "$INSTDIR\dradis web interface.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\readme.txt"
-  Delete "$INSTDIR\CHANGELOG"
-  Delete "$INSTDIR\RELEASE_NOTES"
-  Delete "$INSTDIR\LICENSE"
-  Delete "$INSTDIR\LICENSE.logo"
+  Delete "$INSTDIR\CHANGELOG.txt"
+  Delete "$INSTDIR\RELEASE_NOTES.txt"
+  Delete "$INSTDIR\LICENSE.txt"
+  Delete "$INSTDIR\LICENSE.logo.txt"
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\dradisframework.org.lnk"
