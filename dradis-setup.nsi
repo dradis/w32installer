@@ -44,7 +44,7 @@
 !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.5.0 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE.txt"
+!insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -88,7 +88,7 @@ ShowUnInstDetails show
 Section
   CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$INSTDIR\dlls"
-  File "extra_docs\dll\README.dlls.txt"
+  File "misc\dll\README.dlls.txt"
   CreateDirectory "$INSTDIR\images"
   SetOutPath "$INSTDIR\images"
   File "images\dradis.ico"
@@ -135,15 +135,15 @@ SectionEnd
 ;  SetOutPath "$WINDIR\system32"
 ;  SetOverwrite off
   ; dependant dll's
-;  File "extra_docs\msvcr71.dll"
-;  File "extra_docs\MSVCP71.DLL"
+;  File "misc\msvcr71.dll"
+;  File "misc\MSVCP71.DLL"
 ;  SetOVerwrite ifnewer
   
 ;  SetOutPath "$INSTDIR\dlls"
-;  File "extra_docs\msvcr71.dll"
-;  File "extra_docs\MSVCP71.DLL"
+;  File "misc\msvcr71.dll"
+;  File "misc\MSVCP71.DLL"
 ;  SetOutPath "$INSTDIR\client"
-;  File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
+;  File "misc\wxruby-1.9.9-x86-mswin32-60.gem"
 ;  # check if ruby is installed and install the wxruby gem locally if so
 ;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
 ;  ${If} $0 != ''
@@ -164,15 +164,15 @@ SectionEnd
 Section "Database Layer (sqlite3 1.2.3)" SEC03
   ; copies the sqlite dll to the system 32 folder
   SetOutPath "$WINDIR\system32"
-  File "extra_docs\dlls\sqlite3.dll"
+  File "misc\dlls\sqlite3.dll"
   SetOverwrite off
   ; sqlite dll is dependant on msvcrt dll
-  File "extra_docs\dlls\msvcrt.dll"
+  File "misc\dlls\msvcrt.dll"
   SetOVerwrite ifnewer
   SetOutPath "$INSTDIR\dlls"
-  File "extra_docs\dlls\sqlite3.dll"
-  File "extra_docs\dlls\msvcrt.dll"
-  File "extra_docs\gems\sqlite3-ruby-1.2.3-mswin32.gem"
+  File "misc\dlls\sqlite3.dll"
+  File "misc\dlls\msvcrt.dll"
+  File "misc\gems\sqlite3-ruby-1.2.3-mswin32.gem"
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -223,7 +223,7 @@ SectionEnd
 
 Section "Rake 0.8.7" SEC06
   SetOutPath "$INSTDIR\"
-  File "extra_docs\gems\rake-0.8.7.gem"
+  File "misc\gems\rake-0.8.7.gem"
   # check if ruby is installed and install the rake gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -243,7 +243,7 @@ SectionEnd
 
 Section "Rack 1.1.0" SEC07
   SetOutPath "$INSTDIR\"
-  File "extra_docs\gems\rack-1.1.0.gem"
+  File "misc\gems\rack-1.1.0.gem"
   # check if ruby is installed and install the rack gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -263,7 +263,7 @@ SectionEnd
 
 Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
-  File "extra_docs\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
+  File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -303,11 +303,11 @@ SectionEnd
 
 Section -Post
   SetOutPath "$INSTDIR"
-  File "extra_docs\readme.txt"
-  File "extra_docs\CHANGELOG.txt"
-  File "extra_docs\RELEASE_NOTES.txt"
-  File "extra_docs\LICENSE.txt"
-  File "extra_docs\LICENSE.logo.txt"
+  File "misc\readme.txt"
+  File "misc\CHANGELOG.txt"
+  File "misc\RELEASE_NOTES.txt"
+  File "misc\LICENSE.txt"
+  File "misc\LICENSE.logo.txt"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
