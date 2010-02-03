@@ -72,7 +72,7 @@ SectionEnd
 
 ; Language files
 # this is the text to be displayed to the user at the end of uninstallation
-!define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis client\r\n - dradis server\r\n \r\nThe the dradis server folder was not removed from the install location.\r\nIt contains the database files that was created since installation.\r\nPlease remove manually.\r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually.\r\n - ruby: uninstall option in the ruby start menu folder\r\n - wxruby: execute 'gem uninstall wxruby' from the command line\r\n - sqlite3: execute 'gem uninstall sqlite3-ruby' from the command line\r\n"
+!define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis server\r\n \r\nThe the dradis server folder was not removed from the install location.\r\nIt contains the database files that was created since installation.\r\nPlease remove manually.\r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually.\r\n - ruby: uninstall option in the ruby start menu folder\r\n - wxruby: execute 'gem uninstall wxruby' from the command line\r\n - sqlite3: execute 'gem uninstall sqlite3-ruby' from the command line\r\n"
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
@@ -210,7 +210,7 @@ Section "Dradis Server" SEC05
   !include "server_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 == ''
-    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+    MessageBox MB_OK "Ruby is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\server"
   ${Else}
     SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
@@ -222,7 +222,7 @@ Section "Dradis Server" SEC05
 SectionEnd
 
 Section "Rake 0.8.7" SEC06
-  SetOutPath "$INSTDIR\client"
+  SetOutPath "$INSTDIR\"
   File "extra_docs\rake-0.8.7.gem"
   # check if ruby is installed and install the rake gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
@@ -242,7 +242,7 @@ Section "Rake 0.8.7" SEC06
 SectionEnd
 
 Section "Rack 1.1.0" SEC07
-  SetOutPath "$INSTDIR\client"
+  SetOutPath "$INSTDIR\"
   File "extra_docs\rack-1.1.0.gem"
   # check if ruby is installed and install the rack gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
@@ -262,7 +262,7 @@ Section "Rack 1.1.0" SEC07
 SectionEnd
 
 Section "RedCloth 4.2.2" SEC08
-  SetOutPath "$INSTDIR\client"
+  SetOutPath "$INSTDIR\"
   File "extra_docs\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
@@ -393,7 +393,7 @@ Section Uninstall
   Delete "$INSTDIR\schema.rb"
   ;RMDir /r "$INSTDIR\client"
   ;RMDir /r "$INSTDIR\server"
-  !include "client_uninstall.nsh"
+  ;!include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
 ;  !include "meta-server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
