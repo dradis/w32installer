@@ -56,9 +56,9 @@ Section
 SetOutPath "$INSTDIR\server"
 readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
 ${If} $0 != ''
-  !define MUI_FINISHPAGE_RUN_TEXT "Initialise the database"
+  !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
   !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
-  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" db:migrate"
+  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" dradis:reset"
 ${EndIf}
 SectionEnd
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
