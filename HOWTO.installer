@@ -23,6 +23,7 @@ $ svn export https://dradis.svn.sourceforge.net/svnroot/dradis/CHANGELOG
 2.1 Save a copy of the NSIS installer script in the naming convention dradis-vx_y_z-setup.nsi, where x_y_z presents the version.
 
 2.2 Open the NSIS script and change the version number in the following locations:
+- line 1  - # dradis-vx_y_z-setup.nsi
 - line 22 - !define PRODUCT_VERSION "x.y.z"
 - line 44 - !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version x.y.z
 - line 82 - OutFile "dradis-vx.y.x-setup.exe"
@@ -30,15 +31,36 @@ $ svn export https://dradis.svn.sourceforge.net/svnroot/dradis/CHANGELOG
 2.3 If the gem versions of wxruby or sqlite needs to be update then the version numbers needs to be updated in the "wxruby" or "sqlite" sections. Also update the file names in the uninstall sections.
 
 
-3. Create the install and uninstall includes
+3. Prepare the client and server code
+-------------------------------------
+configure the server:
+3.1 database and plugin configuration files
+$ cd server/config/
+$ mv database.yml.template database.yml
+$ mv nessus_upload.yml.template nessus_upload.yml
+$ mv project_management.yml.template project_management.yml
+$ mv vulndn_import.yml.template vulndb_import.yml
+$ mv wiki_import.yml.template wiki_import.yml
+
+3.2 rails environment: uncomment line 5 of environment.rb
+ENV['RAILS_ENV'] ||= 'production'
+
+configure the client:
+3.3 debug mode. Comment line #57 and un-comment line #58 of dradis.rb
+$ cd ../../client/
+# $logger.level = Logger::DEBUG
+$logger.level = Logger::FATAL
+
+
+4. Create the install and uninstall includes
 --------------------------------------------
-3.1 Run the nsis_folder_dump.rb script in the *dradis installer* folder for the client folder:
+4.1 Run the nsis_folder_dump.rb script in the *dradis installer* folder for the client folder:
 $ nsis_folder_dump.rb client client
 The output files will be:
 - client_install.nsh
 - client_uninstall.nsh
 
-3.2 Run the nsis_folder_dump.rb script in the *dradis installer* folder for the server folder:
+4.2 Run the nsis_folder_dump.rb script in the *dradis installer* folder for the server folder:
 $ nsis_folder_dump.rb server server
 The output files will be:
 - server_install.nsh
@@ -47,24 +69,7 @@ The output files will be:
 These files are automatically included by the NSIS script.
 
 
-5. Prepare the client and server code
--------------------------------------
-configure the server:
-5.1 database configuration file
-$ cd server/config/
-$ mv database.yml.template database.yml
-
-5.2 rails environment: uncomment line 5 of environment.rb
-ENV['RAILS_ENV'] ||= 'production'
-
-configure the client:
-5.3 debug mode. Comment line #56 and un-comment line #57 of dradis.rb
-$ cd ../../client/
-# $logger.level = Logger::DEBUG
-$logger.level = Logger::FATAL
-
-
-4. Compile the NSIS script
+5. Compile the NSIS script
 --------------------------
 Open the script in HMNIS editor and compile it to an executable. 
 

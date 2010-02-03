@@ -1,4 +1,4 @@
-# dradis-v2_0-setup.nsi
+# dradis-v2_5_0-setup.nsi
 # 20 January 2009
 # siebert lubbe (siebertlubbe at googlemail dot com)
 #
@@ -19,7 +19,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.4.1"
+!define PRODUCT_VERSION "2.5.0"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -41,7 +41,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.4.1 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.5.0 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "extra_docs\LICENSE.txt"
@@ -79,7 +79,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.4.1-setup.exe"
+OutFile "dradis-v2.5.0-setup.exe"
 InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -95,7 +95,7 @@ Section
   CreateDirectory "$SMPROGRAMS\dradis"
   CreateShortCut "$SMPROGRAMS\dradis\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
   CreateShortCut "$SMPROGRAMS\dradis\dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
-  CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"lp
 SectionEnd
 
 ; this section handles the installation of ruby
@@ -131,35 +131,35 @@ Section "ruby" SEC01
   ${EndIf}
 SectionEnd
 
-Section "Graphical Library (wxruby 1.9.9)" SEC02
-  SetOutPath "$WINDIR\system32"
-  SetOverwrite off
+;Section "Graphical Library (wxruby 1.9.9)" SEC02
+;  SetOutPath "$WINDIR\system32"
+;  SetOverwrite off
   ; dependant dll's
-  File "extra_docs\msvcr71.dll"
-  File "extra_docs\MSVCP71.DLL"
-  SetOVerwrite ifnewer
+;  File "extra_docs\msvcr71.dll"
+;  File "extra_docs\MSVCP71.DLL"
+;  SetOVerwrite ifnewer
   
-  SetOutPath "$INSTDIR\dlls"
-  File "extra_docs\msvcr71.dll"
-  File "extra_docs\MSVCP71.DLL"
-  SetOutPath "$INSTDIR\client"
-  File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
-  # check if ruby is installed and install the wxruby gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 != ''
-    ; ruby installed
-    StrCpy $1 ''
-    ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri wxruby-1.9.9-x86-mswin32-60.gem' $1
-    ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.9) gem manually"
-    ${EndIf}
-  ${Else}
-    ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the wxruby (version 1.9.9) gem manually"
-  ${EndIf}
-  Delete "wxruby-1.9.9-x86-mswin32-60.gem"
-SectionEnd
+;  SetOutPath "$INSTDIR\dlls"
+;  File "extra_docs\msvcr71.dll"
+;  File "extra_docs\MSVCP71.DLL"
+;  SetOutPath "$INSTDIR\client"
+;  File "extra_docs\wxruby-1.9.9-x86-mswin32-60.gem"
+;  # check if ruby is installed and install the wxruby gem locally if so
+;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+;  ${If} $0 != ''
+;    ; ruby installed
+;    StrCpy $1 ''
+;    ; install the wxruby locally
+;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri wxruby-1.9.9-x86-mswin32-60.gem' $1
+;    ${If} $1 == ''
+;      MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.9) gem manually"
+;    ${EndIf}
+;  ${Else}
+;    ; ruby not installed
+;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the wxruby (version 1.9.9) gem manually"
+;  ${EndIf}
+;  Delete "wxruby-1.9.9-x86-mswin32-60.gem"
+;SectionEnd
 
 Section "Database Layer (sqlite3 1.2.3)" SEC03
   ; copies the sqlite dll to the system 32 folder
@@ -190,21 +190,21 @@ Section "Database Layer (sqlite3 1.2.3)" SEC03
   Delete "sqlite3-ruby-1.2.3-mswin32.gem"
 SectionEnd
 
-Section "Dradis Client" SEC04
-  !include "client_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 == ''
-    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
-  ${Else}
-    SetOutPath "$INSTDIR\client"
-    # create a shortcuts to start the dradis client from the start menu
-    CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
-    CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
-    # create a shortcuts to start the dradis client in the install directory
-    CreateShortCut "$INSTDIR\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
-    CreateShortCut "$INSTDIR\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
-  ${EndIf}
-SectionEnd
+;Section "Dradis Client" SEC04
+;  !include "client_install.nsh"
+;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+;  ${If} $0 == ''
+;    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
+;  ${Else}
+;    SetOutPath "$INSTDIR\client"
+;    # create a shortcuts to start the dradis client from the start menu
+;    CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
+;    CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+;    # create a shortcuts to start the dradis client in the install directory
+;    CreateShortCut "$INSTDIR\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
+;    CreateShortCut "$INSTDIR\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
+;  ${EndIf}
+;SectionEnd
 
 Section "Dradis Server" SEC05
   !include "server_install.nsh"
@@ -221,7 +221,67 @@ Section "Dradis Server" SEC05
   ${EndIf}
 SectionEnd
 
-;Section "Meta-Server" SEC06
+Section "Rake 0.8.7" SEC06
+  SetOutPath "$INSTDIR\client"
+  File "extra_docs\rake-0.8.7.gem"
+  # check if ruby is installed and install the rake gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the rake locally
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
+  ${EndIf}
+  Delete "rake-0.8.7.gem"
+SectionEnd
+
+Section "Rack 1.1.0" SEC07
+  SetOutPath "$INSTDIR\client"
+  File "extra_docs\rack-1.1.0.gem"
+  # check if ruby is installed and install the rack gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the rack locally
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rack-1.1.0.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the rack (version 1.1.0) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rack (version 1.1.0) gem manually"
+  ${EndIf}
+  Delete "rack-1.1.0.gem"
+SectionEnd
+
+Section "RedCloth 4.2.2" SEC08
+  SetOutPath "$INSTDIR\client"
+  File "extra_docs\RedCloth-4.2.2-x86-mswin32-60.gem"
+  # check if ruby is installed and install the RedCloth gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the RedCloth locally
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri RedCloth-4.2.2-x86-mswin32-60.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.2) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.2) gem manually"
+  ${EndIf}
+  Delete "RedCloth-4.2.2-x86-mswin32-60.gem"
+SectionEnd
+
+;Section "Meta-Server" SEC09
 ;  !include "meta-server_install.nsh"
 ;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
 ;  ${If} $0 == ''
@@ -235,26 +295,6 @@ SectionEnd
 ;    CreateShortCut "$INSTDIR\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
 ;  ${EndIf}
 ;SectionEnd
-
-Section "Rake 0.8.7" SEC06
-  SetOutPath "$INSTDIR\client"
-  File "extra_docs\rake-0.8.7.gem"
-  # check if ruby is installed and install the wxruby gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  ${If} $0 != ''
-    ; ruby installed
-    StrCpy $1 ''
-    ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
-    ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
-    ${EndIf}
-  ${Else}
-    ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
-  ${EndIf}
-  Delete "rake-0.8.7.gem"
-SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
@@ -286,23 +326,27 @@ Function .onInit
   ${EndIf}
   IntOp $0 ${SF_SELECTED} | ${SF_RO}
   SectionSetFlags ${SEC03} $0
-  SectionSetFlags ${SEC04} $0
+;  SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
   SectionSetFlags ${SEC06} $0
+  SectionSetFlags ${SEC07} $0
+  SectionSetFlags ${SEC08} $0
 
   ; don't install the Meta-Server by default
-;  SectionSetFlags ${SEC06} 0
+;  SectionSetFlags ${SEC09} 0
 FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Updates the internal rake library of Ruby. Dradis requires a newer version to the one shipped with the Ruby installer."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "Installs the rack gem. The gem requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Installs the RedCloth gem. The gem requires ruby to be installed."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -331,15 +375,15 @@ Section Uninstall
   Delete "$SMPROGRAMS\dradis\dradis web interface.lnk"
   
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
-  Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
-  Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
+;  Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
+;  Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
   Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
 ;  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
 ;  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
     
   Delete "$INSTDIR\start dradis server.lnk"
-  Delete "$INSTDIR\start client (command line).lnk"
-  Delete "$INSTDIR\start client (graphical).lnk"
+;  Delete "$INSTDIR\start client (command line).lnk"
+;  Delete "$INSTDIR\start client (graphical).lnk"
   Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
 ;  Delete "$INSTDIR\create meta-server database.lnk"
 ;  Delete "$INSTDIR\start dradis meta-server.lnk"
