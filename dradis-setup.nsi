@@ -1,4 +1,4 @@
-# dradis-v2_5_0-setup.nsi
+# adis-v2_5_0-setup.nsi
 # 20 January 2009
 # siebert lubbe (siebertlubbe at googlemail dot com)
 #
@@ -72,7 +72,7 @@ SectionEnd
 
 ; Language files
 # this is the text to be displayed to the user at the end of uninstallation
-!define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis server\r\n \r\nThe the dradis server folder was not removed from the install location.\r\nIt contains the database files that was created since installation.\r\nPlease remove manually.\r\nIf you want to remove ruby, wxruby or sqlite3 please do so manually.\r\n - ruby: uninstall option in the ruby start menu folder\r\n - wxruby: execute 'gem uninstall wxruby' from the command line\r\n - sqlite3: execute 'gem uninstall sqlite3-ruby' from the command line\r\n"
+!define MUI_FINISHPAGE_TEXT "The following components was successfully removed: \r\n - dradis server\r\n \r\nThe the dradis server folder was not removed from the install location.\r\nIt contains the database files that was created since installation.\r\nPlease remove manually.\r\nIf you want to remove ruby, RedCloth or sqlite3 please do so manually.\r\n - ruby: uninstall option in the ruby start menu folder\r\n - RedCloth: execute 'gem uninstall RedCloth' from the command line\r\n - sqlite3: execute 'gem uninstall sqlite3-ruby' from the command line\r\n"
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
