@@ -1,4 +1,4 @@
-# dradis-v2_5_0-setup.nsi
+# dradis-v2_5-setup.nsi
 # 20 January 2009
 # siebert lubbe (siebertlubbe at googlemail dot com)
 #
@@ -19,7 +19,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.5.0"
+!define PRODUCT_VERSION "2.5"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -41,7 +41,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.5.0 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.5 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -79,7 +79,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.5.0-setup.exe"
+OutFile "dradis-v2.5-setup.exe"
 InstallDir "$APPDATA\dradis"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -88,7 +88,7 @@ ShowUnInstDetails show
 Section
   CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$INSTDIR\dlls"
-  File "misc\dll\README.dlls.txt"
+  File "misc\dlls\README.dlls.txt"
   CreateDirectory "$INSTDIR\images"
   SetOutPath "$INSTDIR\images"
   File "images\dradis.ico"
