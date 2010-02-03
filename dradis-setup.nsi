@@ -110,21 +110,21 @@ Section "ruby" SEC01
     ; no ruby installer
     MessageBox MB_OK 'The ruby installer will now be downloaded and executed. This might take a few moments.'
     ; download and install ruby
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/29263/ruby186-26.exe" "ruby186-26.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"ruby186-26.exe"' $0
+      ExecWait '"ruby186-27_rc2.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
         MessageBox MB_OK "Ruby install failed. Please install Ruby manually"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "ruby186-26.exe"
+      Delete "ruby186-27_rc2.exe"
     ${Else}
-      Delete "ruby186-26.exe"
+      Delete "ruby186-27_rc2.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
     ${EndIf}
