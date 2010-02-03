@@ -1,4 +1,4 @@
-# adis-v2_5_0-setup.nsi
+# dradis-v2_5_0-setup.nsi
 # 20 January 2009
 # siebert lubbe (siebertlubbe at googlemail dot com)
 #
