@@ -88,7 +88,7 @@ ShowUnInstDetails show
 Section
   CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$INSTDIR\dlls"
-  File "extra_docs\README.dlls.txt"
+  File "extra_docs\dll\README.dlls.txt"
   CreateDirectory "$INSTDIR\images"
   SetOutPath "$INSTDIR\images"
   File "images\dradis.ico"
@@ -164,15 +164,15 @@ SectionEnd
 Section "Database Layer (sqlite3 1.2.3)" SEC03
   ; copies the sqlite dll to the system 32 folder
   SetOutPath "$WINDIR\system32"
-  File "extra_docs\sqlite3.dll"
+  File "extra_docs\dlls\sqlite3.dll"
   SetOverwrite off
   ; sqlite dll is dependant on msvcrt dll
-  File "extra_docs\msvcrt.dll"
+  File "extra_docs\dlls\msvcrt.dll"
   SetOVerwrite ifnewer
   SetOutPath "$INSTDIR\dlls"
-  File "extra_docs\sqlite3.dll"
-  File "extra_docs\msvcrt.dll"
-  File "extra_docs\sqlite3-ruby-1.2.3-mswin32.gem"
+  File "extra_docs\dlls\sqlite3.dll"
+  File "extra_docs\dlls\msvcrt.dll"
+  File "extra_docs\gems\sqlite3-ruby-1.2.3-mswin32.gem"
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -223,7 +223,7 @@ SectionEnd
 
 Section "Rake 0.8.7" SEC06
   SetOutPath "$INSTDIR\"
-  File "extra_docs\rake-0.8.7.gem"
+  File "extra_docs\gems\rake-0.8.7.gem"
   # check if ruby is installed and install the rake gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -243,7 +243,7 @@ SectionEnd
 
 Section "Rack 1.1.0" SEC07
   SetOutPath "$INSTDIR\"
-  File "extra_docs\rack-1.1.0.gem"
+  File "extra_docs\gems\rack-1.1.0.gem"
   # check if ruby is installed and install the rack gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
@@ -263,7 +263,7 @@ SectionEnd
 
 Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
-  File "extra_docs\RedCloth-4.2.2-x86-mswin32-60.gem"
+  File "extra_docs\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
   ${If} $0 != ''
