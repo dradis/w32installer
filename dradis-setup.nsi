@@ -401,6 +401,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\dlls"
   RMDir /r "$INSTDIR\images"
+  RMDir "$INSTDIR"
   RMDir "$SMPROGRAMS\dradis"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
