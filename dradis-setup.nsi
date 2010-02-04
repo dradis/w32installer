@@ -102,7 +102,8 @@ SectionEnd
 Section "ruby" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     MessageBox MB_OK 'Ruby is already installed on the system. The automated installation of Ruby will not proceed'
@@ -110,21 +111,22 @@ Section "ruby" SEC01
     ; no ruby installer
     MessageBox MB_OK 'The ruby installer will now be downloaded and executed. This might take a few moments.'
     ; download and install ruby
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
+    ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/66871/rubyinstaller-1.8.6-p383-rc1.exe" "rubyinstaller-1.8.6-p383-rc1.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"ruby186-27_rc2.exe"' $0
+      ExecWait '"rubyinstaller-1.8.6-p383-rc1.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
         MessageBox MB_OK "Ruby install failed. Please install Ruby manually"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "ruby186-27_rc2.exe"
+      Delete "rubyinstaller-1.8.6-p383-rc1.exe"
     ${Else}
-      Delete "ruby186-27_rc2.exe"
+      Delete "rubyinstaller-1.8.6-p383-rc1.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
     ${EndIf}
@@ -174,7 +176,8 @@ Section "Database Layer (sqlite3 1.2.3)" SEC03
   File "misc\dlls\msvcrt.dll"
   File "misc\gems\sqlite3-ruby-1.2.3-mswin32.gem"
   # check if ruby is installed and install the gem gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -208,7 +211,8 @@ SectionEnd
 
 Section "Dradis Server" SEC05
   !include "server_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
     MessageBox MB_OK "Ruby is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\server"
   ${Else}
@@ -225,7 +229,8 @@ Section "Rake 0.8.7" SEC06
   SetOutPath "$INSTDIR\"
   File "misc\gems\rake-0.8.7.gem"
   # check if ruby is installed and install the rake gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -245,7 +250,8 @@ Section "Rack 1.1.0" SEC07
   SetOutPath "$INSTDIR\"
   File "misc\gems\rack-1.1.0.gem"
   # check if ruby is installed and install the rack gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -265,7 +271,8 @@ Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
   File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
