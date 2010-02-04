@@ -54,7 +54,8 @@
 ; Finish page
 Section
 SetOutPath "$INSTDIR\server"
-readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
 ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
   !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
@@ -325,7 +326,8 @@ Section -Post
 SectionEnd
 
 Function .onInit
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
+  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     ; remove the option to select ruby to be installed
