@@ -53,13 +53,14 @@
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
 Section
-SetOutPath "$INSTDIR\server"
+SetOutPath "$INSTDIR"
 ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
 readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
 ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
-  !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
-  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" dradis:reset"
+  !define MUI_FINISHPAGE_RUN "$INSTDIR\reset.bat"
+;  !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
+;  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" dradis:reset"
 ${EndIf}
 SectionEnd
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
@@ -80,7 +81,7 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.5-setup.exe"
+OutFile "dradis-v2.5.0-setup.exe"
 InstallDir "$APPDATA\dradis-2.5"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -413,7 +414,8 @@ Section Uninstall
   ;!include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
 ;  !include "meta-server_uninstall.nsh"
-  Delete "$INSTDIR\server\first_login.txt"
+  Delete "$INSTDIR\server\config\first_login.txt"
+  RMDir "$INSTDIR\server\config"
   RMDir "$INSTDIR\server\backups"
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\dlls"
