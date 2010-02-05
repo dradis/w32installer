@@ -81,7 +81,7 @@ SectionEnd
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "dradis-v2.5-setup.exe"
-InstallDir "$APPDATA\dradis"
+InstallDir "$APPDATA\dradis-2.5"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -404,10 +404,12 @@ Section Uninstall
 ;  Delete "$INSTDIR\start dradis meta-server.lnk"
   
   SetOutPath "$INSTDIR"
-  File "server\db\*"
   Delete "$INSTDIR\schema.rb"
   ;RMDir /r "$INSTDIR\client"
-  RMDir /r "$INSTDIR\server"
+  RMDir /r "$INSTDIR\server\log"
+  RMDir "$INSTDIR\server\attachments"
+  RMDir "$INSTDIR\server\backups"
+  RMDir "$INSTDIR\server"
   ;!include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
 ;  !include "meta-server_uninstall.nsh"
