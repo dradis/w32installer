@@ -219,10 +219,14 @@ Section "Dradis Server" SEC05
   ${Else}
     SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"'
-    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
-    CreateShortCut "$INSTDIR\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"' "$INSTDIR\images\dradis.ico"
+    
+    SetOutPath "$INSTDIR"
+    ;CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
+    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
+    ;CreateShortCut "$INSTDIR\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
+    
   ${EndIf}
 SectionEnd
 
@@ -316,6 +320,7 @@ Section -Post
   File "misc\RELEASE_NOTES.txt"
   File "misc\LICENSE.txt"
   File "misc\LICENSE.logo.txt"
+  File "misc\reset.bat"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -389,11 +394,12 @@ Section Uninstall
   Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
 ;  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
 ;  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
-    
+
   Delete "$INSTDIR\start dradis server.lnk"
 ;  Delete "$INSTDIR\start client (command line).lnk"
 ;  Delete "$INSTDIR\start client (graphical).lnk"
-  Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
+   ;Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
+   Delete "$INSTDIR\reset.bat"
 ;  Delete "$INSTDIR\create meta-server database.lnk"
 ;  Delete "$INSTDIR\start dradis meta-server.lnk"
   
