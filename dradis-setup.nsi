@@ -19,7 +19,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.5"
+!define PRODUCT_VERSION "2.6"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -54,8 +54,9 @@
 ; Finish page
 Section
 SetOutPath "$INSTDIR"
-;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+;readRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{BD5F3A9C-22D5-4C1D-AEA0-ED1BE83A1E67}_is1" "Inno Setup: App Path"
 ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
   !define MUI_FINISHPAGE_RUN "$INSTDIR\reset.bat"
@@ -81,8 +82,8 @@ SectionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.5.0-setup.exe"
-InstallDir "$APPDATA\dradis-2.5"
+OutFile "dradis-v2.6.0-setup.exe"
+InstallDir "$APPDATA\dradis-2.6"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -104,33 +105,33 @@ SectionEnd
 Section "ruby" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
-    MessageBox MB_OK 'Ruby is already installed on the system. The automated installation of Ruby will not proceed'
+    MessageBox MB_OK 'Ruby 1.9.2 is already installed on the system. The automated installation of Ruby will not proceed'
   ${Else}
     ; no ruby installer
-    MessageBox MB_OK 'The ruby installer will now be downloaded and executed. This might take a few moments.'
+    MessageBox MB_OK 'The Ruby 1.9.2 installer will now be downloaded and executed. This might take a few moments.'
     ; download and install ruby
     ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/66871/rubyinstaller-1.8.6-p383-rc1.exe" "rubyinstaller-1.8.6-p383-rc1.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72170/rubyinstaller-1.9.2-p0.exe" "rubyinstaller-1.9.2-p0.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"rubyinstaller-1.8.6-p383-rc1.exe"' $0
+      ExecWait '"rubyinstaller-1.9.2-p0.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
-        MessageBox MB_OK "Ruby install failed. Please install Ruby manually"
+        MessageBox MB_OK "Ruby 1.9.2 install failed. Please install Ruby manually: http://rubyinstaller.org/"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "rubyinstaller-1.8.6-p383-rc1.exe"
+      Delete "rubyinstaller-1.9.2-p0.exe"
     ${Else}
-      Delete "rubyinstaller-1.8.6-p383-rc1.exe"
+      Delete "rubyinstaller-1.9.2-p0.exe"
       ; ruby download not successfull
-      MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually"
+      MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually: http://rubyinstaller.org/"
     ${EndIf}
   ${EndIf}
 SectionEnd
@@ -213,15 +214,15 @@ SectionEnd
 
 Section "Dradis Server" SEC05
   !include "server_install.nsh"
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
-    MessageBox MB_OK "Ruby is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\server"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\rails server"
   ${Else}
     SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"' "$INSTDIR\images\dradis.ico"
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\server"' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails server"' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails server"' "$INSTDIR\images\dradis.ico"
     
     SetOutPath "$INSTDIR"
     ;CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
@@ -235,8 +236,8 @@ Section "Rake 0.8.7" SEC06
   SetOutPath "$INSTDIR\"
   File "misc\gems\rake-0.8.7.gem"
   # check if ruby is installed and install the rake gem locally if so
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -256,8 +257,8 @@ Section "Rack 1.1.0" SEC07
   SetOutPath "$INSTDIR\"
   File "misc\gems\rack-1.1.0.gem"
   # check if ruby is installed and install the rack gem locally if so
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -277,8 +278,8 @@ Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
   File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -332,8 +333,8 @@ Section -Post
 SectionEnd
 
 Function .onInit
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     ; remove the option to select ruby to be installed
@@ -353,7 +354,7 @@ FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.2 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
