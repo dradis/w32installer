@@ -1,4 +1,5 @@
 @echo off
-set PATH=c:\Ruby\bin;%PATH%
+;If the script doesn't work, uncomment and adjust the following:
+;set PATH=c:\Ruby192\bin;%PATH%
 cd server
-"c:\Ruby\bin\rake.bat" -f Rakefile dradis:reset
+rake.bat -f Rakefile dradis:reset
