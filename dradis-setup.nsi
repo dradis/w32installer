@@ -41,7 +41,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.5 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.6 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -54,7 +54,7 @@
 ; Finish page
 Section
 SetOutPath "$INSTDIR"
-readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
 ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
 ;readRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{BD5F3A9C-22D5-4C1D-AEA0-ED1BE83A1E67}_is1" "Inno Setup: App Path"
 ${If} $0 != ''
@@ -105,7 +105,7 @@ SectionEnd
 Section "ruby" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
@@ -166,34 +166,30 @@ SectionEnd
 ;  Delete "wxruby-1.9.9-x86-mswin32-60.gem"
 ;SectionEnd
 
-Section "Database Layer (sqlite3 1.2.3)" SEC03
-  ; copies the sqlite dll to the system 32 folder
-  SetOutPath "$WINDIR\system32"
-  File "misc\dlls\sqlite3.dll"
-  SetOverwrite off
-  ; sqlite dll is dependant on msvcrt dll
-  File "misc\dlls\msvcrt.dll"
-  SetOVerwrite ifnewer
-  SetOutPath "$INSTDIR\dlls"
-  File "misc\dlls\sqlite3.dll"
-  File "misc\dlls\msvcrt.dll"
-  File "misc\gems\sqlite3-ruby-1.2.3-mswin32.gem"
+Section "Database Layer (sqlite3 1.2.5)" SEC03
   # check if ruby is installed and install the gem gem locally if so
-  ;readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-  readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
-    ; ruby installed
+    ; ruby installed copies the sqlite dll to the <ruby>\bin folder
+    SetOutPath "$0\bin"
+    File "misc\dlls\sqlite3.dll"
+    ; sqlite dll is dependant on msvcrt dll
+    File "misc\dlls\msvcrt.dll"
+    SetOutPath "$INSTDIR\dlls"
+    File "misc\gems\sqlite3-ruby-1.2.5-x86-mingw32.gem"
+
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.2.3-mswin32.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.2.5-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.2.3) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.1) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.2.3) gem manually"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.2.5) gem manually"
   ${EndIf}
-  Delete "sqlite3-ruby-1.2.3-mswin32.gem"
+  Delete "sqlite3-ruby-1.2.5-x86-mingw32.gem"
 SectionEnd
 
 ;Section "Dradis Client" SEC04
@@ -214,15 +210,15 @@ SectionEnd
 
 Section "Dradis Server" SEC05
   !include "server_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
     MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\rails server"
   ${Else}
     SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails server"' "$INSTDIR\images\dradis.ico"
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails server"' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
     
     SetOutPath "$INSTDIR"
     ;CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
@@ -232,53 +228,54 @@ Section "Dradis Server" SEC05
   ${EndIf}
 SectionEnd
 
-Section "Rake 0.8.7" SEC06
-  SetOutPath "$INSTDIR\"
-  File "misc\gems\rake-0.8.7.gem"
-  # check if ruby is installed and install the rake gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-  ${If} $0 != ''
-    ; ruby installed
-    StrCpy $1 ''
-    ; install the rake locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
-    ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
-    ${EndIf}
-  ${Else}
-    ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
-  ${EndIf}
-  Delete "rake-0.8.7.gem"
-SectionEnd
-
-Section "Rack 1.1.0" SEC07
-  SetOutPath "$INSTDIR\"
-  File "misc\gems\rack-1.1.0.gem"
-  # check if ruby is installed and install the rack gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-  ${If} $0 != ''
-    ; ruby installed
-    StrCpy $1 ''
-    ; install the rack locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rack-1.1.0.gem' $1
-    ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the rack (version 1.1.0) gem manually"
-    ${EndIf}
-  ${Else}
-    ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rack (version 1.1.0) gem manually"
-  ${EndIf}
-  Delete "rack-1.1.0.gem"
-SectionEnd
+; no need to do any of this with the new Bundler
+;Section "Rake 0.8.7" SEC06
+;  SetOutPath "$INSTDIR\"
+;  File "misc\gems\rake-0.8.7.gem"
+;  # check if ruby is installed and install the rake gem locally if so
+;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+;  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+;  ${If} $0 != ''
+;    ; ruby installed
+;    StrCpy $1 ''
+;    ; install the rake locally
+;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
+;    ${If} $1 == ''
+;      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
+;    ${EndIf}
+;  ${Else}
+;    ; ruby not installed
+;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
+;  ${EndIf}
+;  Delete "rake-0.8.7.gem"
+;SectionEnd
+;
+;Section "Rack 1.1.0" SEC07
+;  SetOutPath "$INSTDIR\"
+;  File "misc\gems\rack-1.1.0.gem"
+;  # check if ruby is installed and install the rack gem locally if so
+;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+;  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+;  ${If} $0 != ''
+;    ; ruby installed
+;    StrCpy $1 ''
+;    ; install the rack locally
+;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rack-1.1.0.gem' $1
+;    ${If} $1 == ''
+;      MessageBox MB_OK "Gem install failed. Please install the rack (version 1.1.0) gem manually"
+;    ${EndIf}
+;  ${Else}
+;    ; ruby not installed
+;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rack (version 1.1.0) gem manually"
+;  ${EndIf}
+;  Delete "rack-1.1.0.gem"
+;SectionEnd
 
 Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
   File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
@@ -333,7 +330,7 @@ Section -Post
 SectionEnd
 
 Function .onInit
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
@@ -344,8 +341,8 @@ Function .onInit
   SectionSetFlags ${SEC03} $0
 ;  SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
-  SectionSetFlags ${SEC06} $0
-  SectionSetFlags ${SEC07} $0
+;  SectionSetFlags ${SEC06} $0
+;  SectionSetFlags ${SEC07} $0
   SectionSetFlags ${SEC08} $0
 
   ; don't install the Meta-Server by default
@@ -356,12 +353,12 @@ FunctionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.2 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install sqlite3 and the sqlite3 ruby gem. This requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This requires ruby to be installed."
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Updates the internal rake library of Ruby. Dradis requires a newer version to the one shipped with the Ruby installer."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "Installs the rack gem. The gem requires ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Installs the RedCloth gem. The gem requires ruby to be installed."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Updates the internal rake library of Ruby. Dradis requires a newer version to the one shipped with the Ruby installer."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "Installs the rack gem. The gem requires ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Installs the RedCloth gem (for note formatting). The gem requires ruby to be installed."
 ;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -408,17 +405,16 @@ Section Uninstall
   SetOutPath "$INSTDIR"
   Delete "$INSTDIR\schema.rb"
   ;RMDir /r "$INSTDIR\client"
-  RMDir /r "$INSTDIR\server\log"
-  RMDir "$INSTDIR\server\attachments"
-  RMDir "$INSTDIR\server\backups"
-  RMDir "$INSTDIR\server"
   ;!include "client_uninstall.nsh"
   !include "server_uninstall.nsh"
 ;  !include "meta-server_uninstall.nsh"
+  RMDir /r "$INSTDIR\server\tmp"
+  RMDir /r "$INSTDIR\server\log"
+  RMDir "$INSTDIR\server\attachments"
+  RMDir "$INSTDIR\server\backups"
   Delete "$INSTDIR\server\config\first_login.txt"
   RMDir "$INSTDIR\server\config"
-  RMDir "$INSTDIR\server\backups"
-  RMDir /r "$INSTDIR\server\tmp"
+  RMDir "$INSTDIR\server"
   RMDir /r "$INSTDIR\dlls"
   RMDir /r "$INSTDIR\images"
   RMDir "$INSTDIR"
