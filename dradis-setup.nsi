@@ -100,7 +100,7 @@ Section
 SectionEnd
 
 ; this section handles the installation of ruby
-Section "ruby" SEC01
+Section "Ruby 1.9.2" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
@@ -134,7 +134,24 @@ Section "ruby" SEC01
   ${EndIf}
 SectionEnd
 
-Section "Database Layer (sqlite3 1.2.5)" SEC03
+Section "Dradis Framework Core" SEC02
+  !include "server_install.nsh"
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
+  ${If} $0 == ''
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\rails server"
+  ${Else}
+    SetOutPath "$INSTDIR\server"
+    # create shortcuts to start the dradis server from the start menu or install directory
+    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
+    
+    SetOutPath "$INSTDIR"
+    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
+  ${EndIf}
+SectionEnd
+
+Section "SQLite3 1.2.5" SEC03
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
@@ -160,28 +177,7 @@ Section "Database Layer (sqlite3 1.2.5)" SEC03
   Delete "sqlite3-ruby-1.2.5-x86-mingw32.gem"
 SectionEnd
 
-Section "Dradis Server" SEC05
-  !include "server_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-  ${If} $0 == ''
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\rails server"
-  ${Else}
-    SetOutPath "$INSTDIR\server"
-    # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
-    
-    SetOutPath "$INSTDIR"
-    ;CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
-    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
-    ;CreateShortCut "$INSTDIR\reset server (deletes db and attachments).lnk" "$0\bin\rake.bat" "dradis:reset"
-    
-  ${EndIf}
-SectionEnd
-
-
-Section "RedCloth 4.2.2" SEC08
+Section "RedCloth 4.2.2" SEC04
   SetOutPath "$INSTDIR\"
   File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
@@ -233,28 +229,20 @@ Function .onInit
     SectionSetFlags ${SEC01} ${SF_RO}
   ${EndIf}
   IntOp $0 ${SF_SELECTED} | ${SF_RO}
+  SectionSetFlags ${SEC02} $0
   SectionSetFlags ${SEC03} $0
-;  SectionSetFlags ${SEC04} $0
-  SectionSetFlags ${SEC05} $0
-;  SectionSetFlags ${SEC06} $0
-;  SectionSetFlags ${SEC07} $0
-  SectionSetFlags ${SEC08} $0
-
-  ; don't install the Meta-Server by default
-;  SectionSetFlags ${SEC09} 0
+  SectionSetFlags ${SEC04} $0
+;  SectionSetFlags ${SEC05} $0
 FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.2 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs the wxruby gem. The gem requires ruby to be installed. Only used by the GUI."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs Dradis core components."
+  ; TODO: Maybe we can rely on Bundler to install SQLite3?
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This requires ruby to be installed."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the dradis client components (console and GUI)."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the dradis server component."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Updates the internal rake library of Ruby. Dradis requires a newer version to the one shipped with the Ruby installer."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "Installs the rack gem. The gem requires ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Installs the RedCloth gem (for note formatting). The gem requires ruby to be installed."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "Installs the dradis Meta-Server component. This is useful if you want a dedicated server to manage multiple projects. It is not a required."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The gem requires ruby to be installed."
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
