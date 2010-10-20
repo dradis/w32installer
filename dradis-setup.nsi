@@ -55,8 +55,6 @@
 Section
 SetOutPath "$INSTDIR"
 readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
-;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-;readRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\{BD5F3A9C-22D5-4C1D-AEA0-ED1BE83A1E67}_is1" "Inno Setup: App Path"
 ${If} $0 != ''
   !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
   !define MUI_FINISHPAGE_RUN "$INSTDIR\reset.bat"
@@ -136,36 +134,6 @@ Section "ruby" SEC01
   ${EndIf}
 SectionEnd
 
-;Section "Graphical Library (wxruby 1.9.9)" SEC02
-;  SetOutPath "$WINDIR\system32"
-;  SetOverwrite off
-  ; dependant dll's
-;  File "misc\msvcr71.dll"
-;  File "misc\MSVCP71.DLL"
-;  SetOVerwrite ifnewer
-  
-;  SetOutPath "$INSTDIR\dlls"
-;  File "misc\msvcr71.dll"
-;  File "misc\MSVCP71.DLL"
-;  SetOutPath "$INSTDIR\client"
-;  File "misc\wxruby-1.9.9-x86-mswin32-60.gem"
-;  # check if ruby is installed and install the wxruby gem locally if so
-;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-;  ${If} $0 != ''
-;    ; ruby installed
-;    StrCpy $1 ''
-;    ; install the wxruby locally
-;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri wxruby-1.9.9-x86-mswin32-60.gem' $1
-;    ${If} $1 == ''
-;      MessageBox MB_OK "Gem install failed. Please install the wxruby (version 1.9.9) gem manually"
-;    ${EndIf}
-;  ${Else}
-;    ; ruby not installed
-;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the wxruby (version 1.9.9) gem manually"
-;  ${EndIf}
-;  Delete "wxruby-1.9.9-x86-mswin32-60.gem"
-;SectionEnd
-
 Section "Database Layer (sqlite3 1.2.5)" SEC03
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
@@ -192,22 +160,6 @@ Section "Database Layer (sqlite3 1.2.5)" SEC03
   Delete "sqlite3-ruby-1.2.5-x86-mingw32.gem"
 SectionEnd
 
-;Section "Dradis Client" SEC04
-;  !include "client_install.nsh"
-;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-;  ${If} $0 == ''
-;    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
-;  ${Else}
-;    SetOutPath "$INSTDIR\client"
-;    # create a shortcuts to start the dradis client from the start menu
-;    CreateShortCut "$SMPROGRAMS\dradis\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
-;    CreateShortCut "$SMPROGRAMS\dradis\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
-;    # create a shortcuts to start the dradis client in the install directory
-;    CreateShortCut "$INSTDIR\start client (command line).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb"'
-;    CreateShortCut "$INSTDIR\start client (graphical).lnk" "$0\bin\ruby.exe" '"$INSTDIR\client\dradis.rb" -g'
-;  ${EndIf}
-;SectionEnd
-
 Section "Dradis Server" SEC05
   !include "server_install.nsh"
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
@@ -228,48 +180,6 @@ Section "Dradis Server" SEC05
   ${EndIf}
 SectionEnd
 
-; no need to do any of this with the new Bundler
-;Section "Rake 0.8.7" SEC06
-;  SetOutPath "$INSTDIR\"
-;  File "misc\gems\rake-0.8.7.gem"
-;  # check if ruby is installed and install the rake gem locally if so
-;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
-;  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-;  ${If} $0 != ''
-;    ; ruby installed
-;    StrCpy $1 ''
-;    ; install the rake locally
-;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
-;    ${If} $1 == ''
-;      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
-;    ${EndIf}
-;  ${Else}
-;    ; ruby not installed
-;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
-;  ${EndIf}
-;  Delete "rake-0.8.7.gem"
-;SectionEnd
-;
-;Section "Rack 1.1.0" SEC07
-;  SetOutPath "$INSTDIR\"
-;  File "misc\gems\rack-1.1.0.gem"
-;  # check if ruby is installed and install the rack gem locally if so
-;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" Path
-;  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-;  ${If} $0 != ''
-;    ; ruby installed
-;    StrCpy $1 ''
-;    ; install the rack locally
-;    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rack-1.1.0.gem' $1
-;    ${If} $1 == ''
-;      MessageBox MB_OK "Gem install failed. Please install the rack (version 1.1.0) gem manually"
-;    ${EndIf}
-;  ${Else}
-;    ; ruby not installed
-;    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rack (version 1.1.0) gem manually"
-;  ${EndIf}
-;  Delete "rack-1.1.0.gem"
-;SectionEnd
 
 Section "RedCloth 4.2.2" SEC08
   SetOutPath "$INSTDIR\"
@@ -291,21 +201,6 @@ Section "RedCloth 4.2.2" SEC08
   ${EndIf}
   Delete "RedCloth-4.2.2-x86-mswin32-60.gem"
 SectionEnd
-
-;Section "Meta-Server" SEC09
-;  !include "meta-server_install.nsh"
-;  readRegStr $0 HKLM "SOFTWARE\RubyInstaller" Path
-;  ${If} $0 == ''
-;    MessageBox MB_OK "Ruby is not installed. A shortcut to start the dradis client will not be created. Start the client from the commandline: ruby $INSTDIR\client\dradis.rb. Use -g as a commandline argument for the graphical user interface"
-;  ${Else}
-;    SetOutPath "$INSTDIR\meta-server"
-;    # create shortcuts to start the dradis meta-server from the start menu or install directory
-;    CreateShortCut "$SMPROGRAMS\dradis\start dradis meta-server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
-;    CreateShortCut "$INSTDIR\start dradis meta-server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\meta-server\script\server"'
-;    CreateShortCut "$SMPROGRAMS\dradis\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
-;    CreateShortCut "$INSTDIR\create meta-server database.lnk" "$0\bin\rake.bat" "db:migrate"
-;  ${EndIf}
-;SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
@@ -388,26 +283,15 @@ Section Uninstall
   Delete "$SMPROGRAMS\dradis\dradis web interface.lnk"
   
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
-;  Delete "$SMPROGRAMS\dradis\start client (command line).lnk"
-;  Delete "$SMPROGRAMS\dradis\start client (graphical).lnk"
   Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
-;  Delete "$SMPROGRAMS\dradis\create meta-server database.lnk"
-;  Delete "$SMPROGRAMS\dradis\start dradis meta-server.lnk"
 
   Delete "$INSTDIR\start dradis server.lnk"
-;  Delete "$INSTDIR\start client (command line).lnk"
-;  Delete "$INSTDIR\start client (graphical).lnk"
-   ;Delete "$INSTDIR\reset server (deletes db and attachments).lnk"
-   Delete "$INSTDIR\reset.bat"
-;  Delete "$INSTDIR\create meta-server database.lnk"
-;  Delete "$INSTDIR\start dradis meta-server.lnk"
+  Delete "$INSTDIR\reset.bat"
   
   SetOutPath "$INSTDIR"
   Delete "$INSTDIR\schema.rb"
-  ;RMDir /r "$INSTDIR\client"
-  ;!include "client_uninstall.nsh"
+  
   !include "server_uninstall.nsh"
-;  !include "meta-server_uninstall.nsh"
   RMDir /r "$INSTDIR\server\tmp"
   RMDir /r "$INSTDIR\server\log"
   RMDir "$INSTDIR\server\attachments"
