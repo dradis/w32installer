@@ -193,9 +193,28 @@ Section "RedCloth 4.2.2" SEC04
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.2) gem manually"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.2) gem manually"
   ${EndIf}
   Delete "RedCloth-4.2.2-x86-mswin32-60.gem"
+SectionEnd
+
+Section "Bundler 1.0.3" SEC05
+  SetOutPath "$INSTDIR\"
+  File "misc\gems\bundler-1.0.3.gem"
+  # check if ruby is installed and install the Bundler gem locally if so
+  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.3.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.3) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.3) gem manually"
+  ${EndIf}
+  Delete "bundler-1.0.3.gem"
 SectionEnd
 
 Section -AdditionalIcons
@@ -232,7 +251,7 @@ Function .onInit
   SectionSetFlags ${SEC02} $0
   SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
-;  SectionSetFlags ${SEC05} $0
+  SectionSetFlags ${SEC05} $0
 FunctionEnd
 
 ; Section descriptions
@@ -240,9 +259,9 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.2 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs Dradis core components."
   ; TODO: Maybe we can rely on Bundler to install SQLite3?
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This requires ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The gem requires ruby to be installed."
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This library requires Ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The library requires Ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -286,6 +305,7 @@ Section Uninstall
   RMDir "$INSTDIR\server\backups"
   Delete "$INSTDIR\server\config\first_login.txt"
   RMDir "$INSTDIR\server\config"
+  Delete "$INSTDIR\server\Gemfile.lock"
   RMDir "$INSTDIR\server"
   RMDir /r "$INSTDIR\dlls"
   RMDir /r "$INSTDIR\images"
