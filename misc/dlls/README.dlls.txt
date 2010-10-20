@@ -1,6 +1,9 @@
-The sqlite3 and wxruby gems are dependant on the following dlls to be in the system32: 
+The sqlite3-ruby gem are dependant on the following dlls to be on the system: 
+
 - sqlite3.dll
 - msvcrt.dll
-If installer did not have access to the system32 then these files need to be copied 
-manually. Simply copy them from the dradis install directory to the $windows\system32 
-folder.
+
+If installer did not have access to the (Ruby)\bin directory then these files 
+need to be copied manually. 
+
+Simply copy them from the Dradis install directory to the (Ruby)\bin folder.
