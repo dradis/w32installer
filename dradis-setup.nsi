@@ -1,4 +1,4 @@
-# dradis-v2_5-setup.nsi
+                # dradis-v2_5-setup.nsi
 # 20 January 2009
 # siebert lubbe (siebertlubbe at googlemail dot com)
 #
@@ -151,7 +151,7 @@ Section "Dradis Framework Core" SEC02
   ${EndIf}
 SectionEnd
 
-Section "SQLite3 1.2.5" SEC03
+Section "SQLite3 1.3.2" SEC03
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
@@ -162,19 +162,19 @@ Section "SQLite3 1.2.5" SEC03
     ; sqlite dll is dependant on msvcrt dll
     File "misc\dlls\msvcrt.dll"
     SetOutPath "$INSTDIR\dlls"
-    File "misc\gems\sqlite3-ruby-1.2.5-x86-mingw32.gem"
+    File "misc\gems\sqlite3-ruby-1.3.2-x86-mingw32.gem"
 
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.2.5-x86-mingw32.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.3.2-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.1) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.2) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.2.5) gem manually"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.2) gem manually"
   ${EndIf}
-  Delete "sqlite3-ruby-1.2.5-x86-mingw32.gem"
+  Delete "sqlite3-ruby-1.3.2-x86-mingw32.gem"
 SectionEnd
 
 Section "RedCloth 4.2.2" SEC04
