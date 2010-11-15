@@ -303,7 +303,11 @@ Section Uninstall
   RMDir /r "$INSTDIR\server\log"
   RMDir "$INSTDIR\server\attachments"
   RMDir "$INSTDIR\server\backups"
+  ; Files that have been created as a result of running Dradis at least once:
   Delete "$INSTDIR\server\config\first_login.txt"
+  Delete "$INSTDIR\server\public\javascripts\all.js"
+  Delete "$INSTDIR\server\public\stylesheets\all.css"
+  
   RMDir "$INSTDIR\server\config"
   Delete "$INSTDIR\server\Gemfile.lock"
   RMDir "$INSTDIR\server"
