@@ -1,6 +1,11 @@
+@echo off
+title Dradis Framework: Reseting the environment...
+
 ::If the script doesn't work, uncomment and adjust the following:
 ::set PATH=c:\Ruby192\bin;%PATH%
-cd server
-call bundle install
+set RAILS_ENV=production
+set BASE=%~dp0
+cd %BASE%\server\
+
+IF NOT EXIST Gemfile.lock call bundle install
 rake.bat -f Rakefile dradis:reset
-cd ..
