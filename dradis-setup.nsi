@@ -92,10 +92,10 @@ Section
   CreateDirectory "$INSTDIR\images"
   SetOutPath "$INSTDIR\images"
   File "images\dradis.ico"
-  CreateDirectory "$SMPROGRAMS\dradis"
-  CreateShortCut "$SMPROGRAMS\dradis\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
-  CreateShortCut "$SMPROGRAMS\dradis\Dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
-  CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"lp
+  CreateDirectory "$SMPROGRAMS\Dradis Framework"
+  CreateShortCut "$SMPROGRAMS\Dradis Framework\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
+  CreateShortCut "$SMPROGRAMS\Dradis Framework\Dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
+  CreateShortCut "$SMPROGRAMS\Dradis Framework\Uninstall.lnk" "$INSTDIR\uninst.exe"lp
 SectionEnd
 
 ; this section handles the installation of ruby
@@ -142,11 +142,11 @@ Section "Dradis Framework Core" SEC02
   ${Else}
     SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\dradis\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$SMPROGRAMS\Dradis Framework\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
     CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
     
     SetOutPath "$INSTDIR"
-    CreateShortCut "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
+    CreateShortCut "$SMPROGRAMS\Dradis Framework\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
   ${EndIf}
 SectionEnd
 
@@ -284,11 +284,11 @@ Section Uninstall
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\LICENSE.logo.txt"
 
-  Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
-  Delete "$SMPROGRAMS\dradis\dradisframework.org.lnk"
-  Delete "$SMPROGRAMS\dradis\Dradis web interface.lnk"
-  Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
-  Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\Uninstall.lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\dradisframework.org.lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\Dradis web interface.lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\start dradis server.lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\reset server (deletes db and attachments).lnk"
 
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\reset.bat"
@@ -312,7 +312,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\dlls"
   RMDir /r "$INSTDIR\images"
   RMDir "$INSTDIR"
-  RMDir "$SMPROGRAMS\dradis"
+  RMDir "$SMPROGRAMS\Dradis Framework"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   SetAutoClose true
