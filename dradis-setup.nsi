@@ -284,9 +284,9 @@ Section Uninstall
   Delete "$SMPROGRAMS\Dradis Framework\Uninstall.lnk"
   Delete "$SMPROGRAMS\Dradis Framework\dradisframework.org.lnk"
   Delete "$SMPROGRAMS\Dradis Framework\Dradis web interface.lnk"
-  Delete "$SMPROGRAMS\Dradis Framework\start dradis server.lnk"
-  Delete "$SMPROGRAMS\Dradis Framework\reset server (deletes db and attachments).lnk"
-
+  Delete "$SMPROGRAMS\Dradis Framework\start server.lnk"
+  Delete "$SMPROGRAMS\Dradis Framework\reset (deletes database and attachments).lnk"
+  
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\reset.bat"
   Delete "$INSTDIR\server.bat"
@@ -303,7 +303,10 @@ Section Uninstall
   Delete "$INSTDIR\server\config\first_login.txt"
   Delete "$INSTDIR\server\public\javascripts\all.js"
   Delete "$INSTDIR\server\public\stylesheets\all.css"
-  
+  RMDir "$INSTDIR\server\public\javascripts"
+  RMDir "$INSTDIR\server\public\stylesheets"
+  RMDir "$INSTDIR\server\public"
+
   RMDir "$INSTDIR\server\config"
   Delete "$INSTDIR\server\Gemfile.lock"
   RMDir "$INSTDIR\server"
