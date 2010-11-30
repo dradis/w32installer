@@ -87,7 +87,6 @@ ShowUnInstDetails show
 
 ; place the creation of the start menu folder here because we need the folder in the other sections
 Section
-  CreateDirectory "$SMPROGRAMS\dradis"
   SetOutPath "$INSTDIR\dlls"
   File "misc\dlls\README.dlls.txt"
   CreateDirectory "$INSTDIR\images"
@@ -95,7 +94,7 @@ Section
   File "images\dradis.ico"
   CreateDirectory "$SMPROGRAMS\dradis"
   CreateShortCut "$SMPROGRAMS\dradis\dradisframework.org.lnk" "$INSTDIR\dradisframework.org.url"
-  CreateShortCut "$SMPROGRAMS\dradis\dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
+  CreateShortCut "$SMPROGRAMS\dradis\Dradis web interface.lnk" "$INSTDIR\dradis web interface.url" "$INSTDIR\images\dradis.ico"
   CreateShortCut "$SMPROGRAMS\dradis\Uninstall.lnk" "$INSTDIR\uninst.exe"lp
 SectionEnd
 
@@ -110,7 +109,7 @@ Section "Ruby 1.9.2" SEC01
     MessageBox MB_OK 'Ruby 1.9.2 is already installed on the system. The automated installation of Ruby will not proceed'
   ${Else}
     ; no ruby installer
-    MessageBox MB_OK 'The Ruby 1.9.2 installer will now be downloaded and executed. This might take a few moments.'
+    MessageBox MB_OK 'The Ruby 1.9.2 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
     ; download and install ruby
     ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
     NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72170/rubyinstaller-1.9.2-p0.exe" "rubyinstaller-1.9.2-p0.exe"
@@ -177,9 +176,9 @@ Section "SQLite3 1.3.2" SEC03
   Delete "sqlite3-ruby-1.3.2-x86-mingw32.gem"
 SectionEnd
 
-Section "RedCloth 4.2.2" SEC04
+Section "RedCloth 4.2.4pre3" SEC04
   SetOutPath "$INSTDIR\"
-  File "misc\gems\RedCloth-4.2.2-x86-mswin32-60.gem"
+  File "misc\gems\RedCloth-4.2.4.pre3-x86-mingw32.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
@@ -187,34 +186,34 @@ Section "RedCloth 4.2.2" SEC04
     ; ruby installed
     StrCpy $1 ''
     ; install the RedCloth locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri RedCloth-4.2.2-x86-mswin32-60.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri RedCloth-4.2.4.pre3-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.2) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.4pre3) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
     MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.2) gem manually"
   ${EndIf}
-  Delete "RedCloth-4.2.2-x86-mswin32-60.gem"
+  Delete "RedCloth-4.2.4.pre3-x86-mingw32.gem"
 SectionEnd
 
-Section "Bundler 1.0.3" SEC05
+Section "Bundler 1.0.7" SEC05
   SetOutPath "$INSTDIR\"
-  File "misc\gems\bundler-1.0.3.gem"
+  File "misc\gems\bundler-1.0.7.gem"
   # check if ruby is installed and install the Bundler gem locally if so
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.3.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.7.gem' $1
     ${If} $1 == ''
       MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.3) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.3) gem manually"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.7) gem manually"
   ${EndIf}
-  Delete "bundler-1.0.3.gem"
+  Delete "bundler-1.0.7.gem"
 SectionEnd
 
 Section -AdditionalIcons
@@ -287,8 +286,7 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\dradis\Uninstall.lnk"
   Delete "$SMPROGRAMS\dradis\dradisframework.org.lnk"
-  Delete "$SMPROGRAMS\dradis\dradis web interface.lnk"
-  
+  Delete "$SMPROGRAMS\dradis\Dradis web interface.lnk"
   Delete "$SMPROGRAMS\dradis\start dradis server.lnk"
   Delete "$SMPROGRAMS\dradis\reset server (deletes db and attachments).lnk"
 
