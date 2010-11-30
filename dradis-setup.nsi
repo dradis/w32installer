@@ -56,7 +56,7 @@ Section
 SetOutPath "$INSTDIR"
 readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
 ${If} $0 != ''
-  !define MUI_FINISHPAGE_RUN_TEXT "Initialise dradis"
+  !define MUI_FINISHPAGE_RUN_TEXT "Initialise Dradis"
   !define MUI_FINISHPAGE_RUN "$INSTDIR\reset.bat"
 ;  !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
 ;  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" dradis:reset"
@@ -138,15 +138,11 @@ Section "Dradis Framework Core" SEC02
   readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the dradis Framework will not be created. Start dradis from the commandline: cd $INSTDIR; ruby.exe script\rails server"
+    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the Dradis Framework will not be created. Start Dradis from the commandline: cd $INSTDIR; server.bat"
   ${Else}
-    SetOutPath "$INSTDIR\server"
     # create shortcuts to start the dradis server from the start menu or install directory
-    CreateShortCut "$SMPROGRAMS\Dradis Framework\start dradis server.lnk" "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
-    CreateShortCut "$INSTDIR\start dradis server.lnk"  "$0\bin\ruby.exe" '"$INSTDIR\server\script\rails" server' "$INSTDIR\images\dradis.ico"
-    
-    SetOutPath "$INSTDIR"
-    CreateShortCut "$SMPROGRAMS\Dradis Framework\reset server (deletes db and attachments).lnk" "$INSTDIR\reset.bat"
+    CreateShortCut "$SMPROGRAMS\Dradis Framework\start server.lnk" "$INSTDIR\server.bat" "" "$INSTDIR\images\dradis.ico"
+    CreateShortCut "$SMPROGRAMS\Dradis Framework\reset (deletes database and attachments).lnk" "$INSTDIR\reset.bat"
   ${EndIf}
 SectionEnd
 
@@ -229,6 +225,7 @@ Section -Post
   File "misc\LICENSE.txt"
   File "misc\LICENSE.logo.txt"
   File "misc\reset.bat"
+  File "misc\server.bat"
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
@@ -292,6 +289,7 @@ Section Uninstall
 
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\reset.bat"
+  Delete "$INSTDIR\server.bat"
   
   SetOutPath "$INSTDIR"
   Delete "$INSTDIR\schema.rb"
