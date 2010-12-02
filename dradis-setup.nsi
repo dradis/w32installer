@@ -1,6 +1,4 @@
-                # dradis-v2_5-setup.nsi
-# 20 January 2009
-# siebert lubbe (siebertlubbe at googlemail dot com)
+# dradis-setup.nsi
 #
 # Desc:
 #   This is the code for the dradis windows installer
@@ -8,9 +6,6 @@
 #   The majority of the code was generated with the HM NIS Script Wizard.
 #   This is mostly code regarding the general framework of the installer
 #   and the creation and copying of the installation files
-#
-# Version:
-#  v1.0 [20 January 2009]: first released
 #
 # License:
 #   See dradis.rb or LICENSE.txt for copyright and licensing information.
