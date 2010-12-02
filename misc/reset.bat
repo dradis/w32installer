@@ -1,5 +1,5 @@
 @echo off
-title Dradis Framework: Reseting the environment...
+title Dradis Framework: Resetting the environment...
 
 ::If the script doesn't work, uncomment and adjust the following:
 ::set PATH=c:\Ruby192\bin;%PATH%
