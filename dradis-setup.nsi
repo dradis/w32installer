@@ -20,6 +20,8 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
+!define RUBYINSTALLER_KEY "SOFTWARE\RubyInstaller\MRI\1.8.7"
+
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
@@ -94,34 +96,35 @@ Section
 SectionEnd
 
 ; this section handles the installation of ruby
-Section "Ruby 1.9.2" SEC01
+Section "Ruby 1.8.7" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
-    MessageBox MB_OK 'Ruby 1.9.2 is already installed on the system. The automated installation of Ruby will not proceed'
+    MessageBox MB_OK 'Ruby 1.8.7 is already installed on the system. The automated installation of Ruby will not proceed'
   ${Else}
     ; no ruby installer
-    MessageBox MB_OK 'The Ruby 1.9.2 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
+    MessageBox MB_OK 'The Ruby 1.8.7 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
     ; download and install ruby
     ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72170/rubyinstaller-1.9.2-p0.exe" "rubyinstaller-1.9.2-p0.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72085/rubyinstaller-1.8.7-p302.exe" "rubyinstaller-1.8.7-p302.exe"
+    ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72170/rubyinstaller-1.9.2-p0.exe" "rubyinstaller-1.9.2-p0.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"rubyinstaller-1.9.2-p0.exe"' $0
+      ExecWait '"rubyinstaller-1.8.7-p302.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
-        MessageBox MB_OK "Ruby 1.9.2 install failed. Please install Ruby manually: http://rubyinstaller.org/"
+        MessageBox MB_OK "Ruby 1.8.7 install failed. Please install Ruby manually: http://rubyinstaller.org/"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "rubyinstaller-1.9.2-p0.exe"
+      Delete "rubyinstaller-1.8.7-p302.exe"
     ${Else}
-      Delete "rubyinstaller-1.9.2-p0.exe"
+      Delete "rubyinstaller-1.8.7-p302.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually: http://rubyinstaller.org/"
     ${EndIf}
@@ -130,10 +133,10 @@ SectionEnd
 
 Section "Dradis Framework Core" SEC02
   !include "server_install.nsh"
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. No shortcuts to start the Dradis Framework will not be created. Start Dradis from the commandline: cd $INSTDIR; server.bat"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. No shortcuts to start the Dradis Framework will not be created. Start Dradis from the commandline: cd $INSTDIR; server.bat"
   ${Else}
     # create shortcuts to start the dradis server from the start menu or install directory
     CreateShortCut "$SMPROGRAMS\Dradis Framework\start server.lnk" "$INSTDIR\server.bat" "" "$INSTDIR\images\dradis.ico"
@@ -143,7 +146,7 @@ SectionEnd
 
 Section "SQLite3 1.3.2" SEC03
   # check if ruby is installed and install the gem gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed copies the sqlite dll to the <ruby>\bin folder
@@ -162,16 +165,16 @@ Section "SQLite3 1.3.2" SEC03
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.2) gem manually"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.2) gem manually"
   ${EndIf}
   Delete "sqlite3-ruby-1.3.2-x86-mingw32.gem"
 SectionEnd
 
-Section "RedCloth 4.2.4pre3" SEC04
+Section "RedCloth 4.2.4.pre3" SEC04
   SetOutPath "$INSTDIR\"
   File "misc\gems\RedCloth-4.2.4.pre3-x86-mingw32.gem"
   # check if ruby is installed and install the RedCloth gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
@@ -179,11 +182,11 @@ Section "RedCloth 4.2.4pre3" SEC04
     ; install the RedCloth locally
     ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri RedCloth-4.2.4.pre3-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.4pre3) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.4.pre3) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.2) gem manually"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.4.pre3) gem manually"
   ${EndIf}
   Delete "RedCloth-4.2.4.pre3-x86-mingw32.gem"
 SectionEnd
@@ -192,7 +195,7 @@ Section "Bundler 1.0.7" SEC05
   SetOutPath "$INSTDIR\"
   File "misc\gems\bundler-1.0.7.gem"
   # check if ruby is installed and install the Bundler gem locally if so
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
@@ -202,7 +205,7 @@ Section "Bundler 1.0.7" SEC05
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.9.2 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.7) gem manually"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.7) gem manually"
   ${EndIf}
   Delete "bundler-1.0.7.gem"
 SectionEnd
@@ -231,7 +234,7 @@ Section -Post
 SectionEnd
 
 Function .onInit
-  readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
@@ -247,7 +250,7 @@ FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.2 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.8.7 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs Dradis core components."
   ; TODO: Maybe we can rely on Bundler to install SQLite3?
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This library requires Ruby to be installed."
