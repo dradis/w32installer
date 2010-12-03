@@ -205,6 +205,26 @@ Section "Bundler 1.0.7" SEC05
   Delete "bundler-1.0.7.gem"
 SectionEnd
 
+Section "Rake 0.8.7" SEC06
+  SetOutPath "$INSTDIR\"
+  File "misc\gems\rake-0.8.7.gem"
+  # check if ruby is installed and install the Bundler gem locally if so
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
+  ${If} $0 != ''
+    ; ruby installed
+    StrCpy $1 ''
+    ; install the rake locally
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
+    ${If} $1 == ''
+      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
+    ${EndIf}
+  ${Else}
+    ; ruby not installed
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
+  ${EndIf}
+  Delete "rake-0.8.7.gem"
+SectionEnd
+
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "URL" "https://127.0.0.1:3004"
@@ -241,6 +261,7 @@ Function .onInit
   SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
+  SectionSetFlags ${SEC06} $0
 FunctionEnd
 
 ; Section descriptions
@@ -251,6 +272,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This library requires Ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The library requires Ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Rake, a Ruby library similar to the GNU Make."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function DradisReset
