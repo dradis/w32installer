@@ -49,16 +49,11 @@
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-Section
-SetOutPath "$INSTDIR"
-readRegStr $0 HKLM "SOFTWARE\RubyInstaller\MRI\1.9.2" InstallLocation
-${If} $0 != ''
-  !define MUI_FINISHPAGE_RUN_TEXT "Initialise Dradis"
-  !define MUI_FINISHPAGE_RUN "$INSTDIR\reset.bat"
-;  !define MUI_FINISHPAGE_RUN "$0\bin\rake.bat"
-;  !define MUI_FINISHPAGE_RUN_PARAMETERS "-f $\"$INSTDIR\server\Rakefile$\" dradis:reset"
-${EndIf}
-SectionEnd
+
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Initialise Dradis"
+!define MUI_FINISHPAGE_RUN_FUNCTION "DradisReset"
+
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
 !define MUI_FINISHPAGE_LINK "http://dradisframework.org"
 !define MUI_FINISHPAGE_LINK_LOCATION "http://dradisframework.org"
@@ -258,6 +253,21 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
+Function DradisReset
+  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
+  ${If} $0 != ''
+    ; If Ruby is not in the PATH (e.g. we just installed it and the installer has the old PATH env variable)
+    ; we need to ensure that the utils used by reset.bat (i.e. bundler, rake) are in the installer's PATH
+    ReadEnvStr $R0 "PATH"
+    StrCpy $R0 "$0\bin;$R0"
+    System::Call 'Kernel32::SetEnvironmentVariableA(t, t) i("PATH", R0).r0'
+    StrCpy $1 ''
+    ExecWait '"$INSTDIR\reset.bat"' $1
+  ${Else}
+    MessageBox MB_OK "Ruby is not installed. After you install Ruby 1.8.7 use the Start menu link to reset the Dradis environment."
+  ${EndIf}
+
+FunctionEnd
 
 Function un.onUninstSuccess
   HideWindow
