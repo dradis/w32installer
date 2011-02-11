@@ -14,7 +14,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.6"
+!define PRODUCT_VERSION "2.6.1"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -38,7 +38,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.6 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.6.1 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -72,7 +72,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.6.0-setup.exe"
+OutFile "dradis-v2.6.1-setup.exe"
 InstallDir "$APPDATA\dradis-2.6"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -165,28 +165,7 @@ Section "SQLite3 1.3.2" SEC03
   Delete "sqlite3-ruby-1.3.2-x86-mingw32.gem"
 SectionEnd
 
-Section "RedCloth 4.2.4.pre3" SEC04
-  SetOutPath "$INSTDIR\"
-  File "misc\gems\RedCloth-4.2.4.pre3-x86-mingw32.gem"
-  # check if ruby is installed and install the RedCloth gem locally if so
-  readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
-  ${If} $0 != ''
-    ; ruby installed
-    StrCpy $1 ''
-    ; install the RedCloth locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri RedCloth-4.2.4.pre3-x86-mingw32.gem' $1
-    ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the RedCloth (version 4.2.4.pre3) gem manually"
-    ${EndIf}
-  ${Else}
-    ; ruby not installed
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the RedCloth (version 4.2.4.pre3) gem manually"
-  ${EndIf}
-  Delete "RedCloth-4.2.4.pre3-x86-mingw32.gem"
-SectionEnd
-
-Section "Bundler 1.0.7" SEC05
+Section "Bundler 1.0.7" SEC04
   SetOutPath "$INSTDIR\"
   File "misc\gems\bundler-1.0.7.gem"
   # check if ruby is installed and install the Bundler gem locally if so
@@ -205,7 +184,7 @@ Section "Bundler 1.0.7" SEC05
   Delete "bundler-1.0.7.gem"
 SectionEnd
 
-Section "Rake 0.8.7" SEC06
+Section "Rake 0.8.7" SEC05
   SetOutPath "$INSTDIR\"
   File "misc\gems\rake-0.8.7.gem"
   # check if ruby is installed and install the Bundler gem locally if so
@@ -261,7 +240,6 @@ Function .onInit
   SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
-  SectionSetFlags ${SEC06} $0
 FunctionEnd
 
 ; Section descriptions
