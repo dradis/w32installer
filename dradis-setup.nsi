@@ -14,7 +14,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.6.1"
+!define PRODUCT_VERSION "2.7"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -38,7 +38,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.6.1 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version 2.7 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -72,8 +72,8 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.6.1-setup.exe"
-InstallDir "$APPDATA\dradis-2.6"
+OutFile "dradis-2.7.0-setup.exe"
+InstallDir "$APPDATA\dradis-2.7"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -95,7 +95,6 @@ Section "Ruby 1.8.7" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed
     MessageBox MB_OK 'Ruby 1.8.7 is already installed on the system. The automated installation of Ruby will not proceed'
@@ -103,23 +102,21 @@ Section "Ruby 1.8.7" SEC01
     ; no ruby installer
     MessageBox MB_OK 'The Ruby 1.8.7 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
     ; download and install ruby
-    ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/47082/ruby186-27_rc2.exe" "ruby186-27_rc2.exe"
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72085/rubyinstaller-1.8.7-p302.exe" "rubyinstaller-1.8.7-p302.exe"
-    ;NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/72170/rubyinstaller-1.9.2-p0.exe" "rubyinstaller-1.9.2-p0.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/74293/rubyinstaller-1.8.7-p334.exe" "rubyinstaller-1.8.7-p334.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"rubyinstaller-1.8.7-p302.exe"' $0
+      ExecWait '"rubyinstaller-1.8.7-p334.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
         MessageBox MB_OK "Ruby 1.8.7 install failed. Please install Ruby manually: http://rubyinstaller.org/"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "rubyinstaller-1.8.7-p302.exe"
+      Delete "rubyinstaller-1.8.7-p334.exe"
     ${Else}
-      Delete "rubyinstaller-1.8.7-p302.exe"
+      Delete "rubyinstaller-1.8.7-p334.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually: http://rubyinstaller.org/"
     ${EndIf}
