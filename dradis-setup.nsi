@@ -72,7 +72,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-2.7.0-setup.exe"
+OutFile "dradis-v2.7.0-setup.exe"
 InstallDir "$APPDATA\dradis-2.7"
 ShowInstDetails show
 ShowUnInstDetails show
