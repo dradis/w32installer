@@ -136,10 +136,9 @@ Section "Dradis Framework Core" SEC02
   ${EndIf}
 SectionEnd
 
-Section "SQLite3 1.3.2" SEC03
+Section "SQLite3 1.3.3" SEC03
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
-  ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 != ''
     ; ruby installed copies the sqlite dll to the <ruby>\bin folder
     SetOutPath "$0\bin"
@@ -147,38 +146,38 @@ Section "SQLite3 1.3.2" SEC03
     ; sqlite dll is dependant on msvcrt dll
     File "misc\dlls\msvcrt.dll"
     SetOutPath "$INSTDIR\dlls"
-    File "misc\gems\sqlite3-ruby-1.3.2-x86-mingw32.gem"
+    File "misc\gems\sqlite3-1.3.3-x86-mingw32.gem"
 
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-ruby-1.3.2-x86-mingw32.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-1.3.3-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.2) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.3) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.2) gem manually"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.3) gem manually"
   ${EndIf}
-  Delete "sqlite3-ruby-1.3.2-x86-mingw32.gem"
+  Delete "sqlite3-1.3.3-x86-mingw32.gem"
 SectionEnd
 
-Section "Bundler 1.0.7" SEC04
+Section "Bundler 1.0.12" SEC04
   SetOutPath "$INSTDIR\"
-  File "misc\gems\bundler-1.0.7.gem"
+  File "misc\gems\bundler-1.0.12.gem"
   # check if ruby is installed and install the Bundler gem locally if so
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.7.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.12.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.3) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.12) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.7) gem manually"
+    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.12) gem manually"
   ${EndIf}
-  Delete "bundler-1.0.7.gem"
+  Delete "bundler-1.0.12.gem"
 SectionEnd
 
 Section "Rake 0.8.7" SEC05
