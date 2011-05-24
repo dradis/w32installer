@@ -49,6 +49,7 @@ Customizing the NSIS script
 ---------------------------
 
 Open the NSIS script and change the version number in the following locations:
+
     line 17 - !define PRODUCT_VERSION "x.y.z"
     line 41 - !define MUI_WELCOMEPAGE_TEXT "This wizard wil guide you through the installation of dradis version x.y.z"
     line 75 - OutFile "dradis-vx.y.x-setup.exe"
