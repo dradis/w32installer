@@ -7,4 +7,4 @@ set RAILS_ENV=production
 set BASE=%~dp0
 cd %BASE%\server\
 
-start "Dradis Framework Server (Ctrl+C to terminate)" bundle exec rails server webrick
+start "Dradis Framework Server (Ctrl+C to terminate)" bundle exec rails server webrick %*
