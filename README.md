@@ -15,13 +15,16 @@ repo. If a tag for this release does not exist yet, go to the
 
 If the tag already exists, download and uncompress the corresponding tarball:
 
-    https://github.com/dradis/dradisframework/tarball/REL-X.Y.Z
+    https://github.com/dradis/dradisframework/tarball/vX.Y.Z
 
 Rename the resulting folder from **dradis-dradisframework-XXXXX** to **server**.
 
+    mv dradis-dradisframework-* server
+    rm server/Gemfile.lock
+
 You also need the _meta_ files (LICENSE, RELEASE_NOTES, etc.), get them from:
 
-    https://github.com/dradis/meta/tarball/REL-X.Y.Z
+    https://github.com/dradis/meta/tarball/vX.Y.Z
 
 Uncompress them under `misc/` and delete the Linux scripts:
 
