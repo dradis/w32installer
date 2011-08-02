@@ -75,6 +75,6 @@ After everything is tested and re-tested, commit any changes to your
     git push origin master
     git branch RB-X.Y
     git push -u origin RB-X.Y
-    git tag -a REL-X.Y.Z -m 'Create tag for release X.Y.Z'
+    git tag -a vX.Y.Z -m 'Dradis Framework vX.Y.Z'
     git push --tags
 
