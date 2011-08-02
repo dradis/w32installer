@@ -180,24 +180,24 @@ Section "Bundler 1.0.12" SEC04
   Delete "bundler-1.0.12.gem"
 SectionEnd
 
-Section "Rake 0.8.7" SEC05
+Section "Rake 0.9.2" SEC05
   SetOutPath "$INSTDIR\"
-  File "misc\gems\rake-0.8.7.gem"
+  File "misc\gems\rake-0.9.2.gem"
   # check if ruby is installed and install the Bundler gem locally if so
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
     ; install the rake locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.8.7.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri rake-0.9.2.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.8.7) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the rake (version 0.9.2) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.8.7) gem manually"
+    MessageBox MB_OK "Ruby is not installed. Please install ruby and then run the installer again or install the rake (version 0.9.2) gem manually"
   ${EndIf}
-  Delete "rake-0.8.7.gem"
+  Delete "rake-0.9.2.gem"
 SectionEnd
 
 Section -AdditionalIcons
@@ -294,7 +294,7 @@ Section Uninstall
   Delete "$INSTDIR\start dradis server.lnk"
   Delete "$INSTDIR\reset.bat"
   Delete "$INSTDIR\server.bat"
-  
+
   SetOutPath "$INSTDIR"
   Delete "$INSTDIR\schema.rb"
   
@@ -305,6 +305,7 @@ Section Uninstall
   RMDir "$INSTDIR\server\backups"
   ; Files that have been created as a result of running Dradis at least once:
   Delete "$INSTDIR\server\config\first_login.txt"
+  Delete "$INSTDIR\server\config\database.yml"
   Delete "$INSTDIR\server\public\javascripts\all.js"
   Delete "$INSTDIR\server\public\stylesheets\all.css"
   RMDir "$INSTDIR\server\public\javascripts"
