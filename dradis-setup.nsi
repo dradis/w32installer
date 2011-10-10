@@ -14,7 +14,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.7.2"
+!define PRODUCT_VERSION "2.8"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -38,7 +38,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dradis version 2.7.2 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dradis version 2.8 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -72,8 +72,8 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.7.2-setup.exe"
-InstallDir "$APPDATA\dradis-2.7"
+OutFile "dradis-v2.8.0-setup.exe"
+InstallDir "$APPDATA\dradis-2.8"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -102,21 +102,21 @@ Section "Ruby 1.8.7" SEC01
     ; no ruby installer
     MessageBox MB_OK 'The Ruby 1.8.7 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
     ; download and install ruby
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/74293/rubyinstaller-1.8.7-p334.exe" "rubyinstaller-1.8.7-p334.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/75107/rubyinstaller-1.8.7-p352.exe" "rubyinstaller-1.8.7-p352.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"rubyinstaller-1.8.7-p334.exe"' $0
+      ExecWait '"rubyinstaller-1.8.7-p352.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
         MessageBox MB_OK "Ruby 1.8.7 install failed. Please install Ruby manually: http://rubyinstaller.org/"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "rubyinstaller-1.8.7-p334.exe"
+      Delete "rubyinstaller-1.8.7-p352.exe"
     ${Else}
-      Delete "rubyinstaller-1.8.7-p334.exe"
+      Delete "rubyinstaller-1.8.7-p352.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually: http://rubyinstaller.org/"
     ${EndIf}
@@ -200,6 +200,32 @@ Section "Rake 0.9.2" SEC05
   Delete "rake-0.9.2.gem"
 SectionEnd
 
+; this section handles the installation of ruby
+Section "Ruby DevKit" SEC06
+  ClearErrors
+
+  MessageBox MB_OK 'The Ruby DevKit installer will now be downloaded and executed.'
+  ; download and install ruby DevKit
+  NSISdl::download /NOIEPROXY "http://cloud.github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe" "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+  Pop $R0
+  ${If} $R0 == 'success'
+    ; ruby download successful
+    StrCpy $0 ''
+    ; rum the one click installer
+    ExecWait '"DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe" -o"$INSTDIR\DevKit" -y' $0
+    ${If} $0 == ''
+      ; execution of DevKit failed
+      MessageBox MB_OK "Ruby DevKit install failed. Please install the Ruby DevKit manually: http://rubyinstaller.org/"
+    ${EndIf}
+    ; delete the ruby DevKit installer
+    Delete "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+  ${Else}
+    Delete "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+    ; ruby DevKit download not successfull
+    MessageBox MB_OK "Ruby DevKit download failed. Please download and install the Ruby DevKit manually: http://rubyinstaller.org/"
+  ${EndIf}
+SectionEnd
+
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\dradisframework.org.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   WriteIniStr "$INSTDIR\dradis web interface.url" "InternetShortcut" "URL" "https://127.0.0.1:3004"
@@ -236,6 +262,7 @@ Function .onInit
   SectionSetFlags ${SEC03} $0
   SectionSetFlags ${SEC04} $0
   SectionSetFlags ${SEC05} $0
+  SectionSetFlags ${SEC06} $0
 FunctionEnd
 
 ; Section descriptions
@@ -246,7 +273,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This library requires Ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The library requires Ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Rake, a Ruby library similar to the GNU Make."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Ruby DevKit, required to compile some Ruby gems with native code"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function DradisReset
