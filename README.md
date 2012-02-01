@@ -22,6 +22,8 @@ Rename the resulting folder from **dradis-dradisframework-XXXXX** to **server**.
     mv dradis-dradisframework-* server
     rm server/Gemfile.lock
 
+Edit the `server/Gemfile` and comment the gem line for **therubyracer** gem (it's not required on Windows).
+
 You also need the _meta_ files (LICENSE, RELEASE_NOTES, etc.), get them from:
 
     https://github.com/dradis/meta/tarball/vX.Y.Z
@@ -36,6 +38,22 @@ Finally, convert line-end characters to Windows format and add the .txt extensio
     ruby -rfileutils -e "Dir['misc/*'].each do |file| if( File.file?(file) ) then tmp = File.read(file); f=File.new(file,'wb'); f.write(tmp.gsub(/\n/, \"\r\n\"));  f.close end  end"
 
 
+A note on asset precompilation
+------------------------------
+
+Starting on v2.9 (which runs Rails 3.2) we need to pre-compile assets so Dradis can run in production mode once it is installed.
+
+The best way to do this is create a first installer without the assets, install and once all the Ruby dependencies are installed in the system, run the precompilation task:
+
+    cd <install_dir>
+    reset.bat
+    cd server
+    set RAILS_ENV=production
+    bundle exec rake assets:precompile
+
+Now you can copy the `./public/assets/` folder to the installer directory (under `./server/public`) and continue with the process.
+
+
 Create the install and uninstall includes
 -----------------------------------------
 
@@ -47,6 +65,7 @@ to use a helper script to generate an index:
 The output a `server_install.nsh` and a `server_uninstall.nsh` that will be
 parsed by NSIS.
 
+**Pro tip**: you can do this once, create the installer, install and reset the environment. This will download the freshest windows-based gems into `<install_dir>\dradis-vX.Y\server\vendor\cache`. To speed up the reset process, copy all these .gem files to the installer folder (inside `server\vendor\cache`) and re-run the command above and create a new installer. Your users will thank you!
 
 Customizing the NSIS script
 ---------------------------
