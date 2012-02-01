@@ -14,13 +14,13 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "dradis"
-!define PRODUCT_VERSION "2.8"
+!define PRODUCT_VERSION "2.9"
 !define PRODUCT_PUBLISHER "Dradis Framework Team"
 !define PRODUCT_WEB_SITE "http://dradisframework.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
-!define RUBYINSTALLER_KEY "SOFTWARE\RubyInstaller\MRI\1.8.7"
+!define RUBYINSTALLER_KEY "SOFTWARE\RubyInstaller\MRI\1.9.3"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -38,7 +38,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
 # this is the text to be displayed at the start of installation
-!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dradis version 2.8 \r\n \r\nClick next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dradis version 2.9 \r\n \r\nClick next to continue."
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "misc\LICENSE.txt"
@@ -72,8 +72,8 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "dradis-v2.8.0-setup.exe"
-InstallDir "$APPDATA\dradis-2.8"
+OutFile "dradis-v2.9.0-setup.exe"
+InstallDir "$APPDATA\dradis-2.9"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -91,32 +91,32 @@ Section
 SectionEnd
 
 ; this section handles the installation of ruby
-Section "Ruby 1.8.7" SEC01
+Section "Ruby 1.9.3" SEC01
   ClearErrors
   ; read the registry to check if there is not already a local installation of ruby
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
     ; ruby installed
-    MessageBox MB_OK 'Ruby 1.8.7 is already installed on the system. The automated installation of Ruby will not proceed'
+    MessageBox MB_OK 'Ruby 1.9.3 is already installed on the system. The automated installation of Ruby will not proceed'
   ${Else}
     ; no ruby installer
-    MessageBox MB_OK 'The Ruby 1.8.7 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
+    MessageBox MB_OK 'The Ruby 1.9.3 installer will now be downloaded and executed. Tick the *Add Ruby executable to your PATH*  checkbox.'
     ; download and install ruby
-    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/75107/rubyinstaller-1.8.7-p352.exe" "rubyinstaller-1.8.7-p352.exe"
+    NSISdl::download /NOIEPROXY "http://rubyforge.org/frs/download.php/75465/rubyinstaller-1.9.3-p0.exe" "rubyinstaller-1.9.3-p0.exe"
     Pop $R0
     ${If} $R0 == 'success'
       ; ruby download successful
       StrCpy $0 ''
       ; rum the one click installer
-      ExecWait '"rubyinstaller-1.8.7-p352.exe"' $0
+      ExecWait '"rubyinstaller-1.9.3-p0.exe"' $0
       ${If} $0 == ''
         ; execution of one click installer failed
-        MessageBox MB_OK "Ruby 1.8.7 install failed. Please install Ruby manually: http://rubyinstaller.org/"
+        MessageBox MB_OK "Ruby 1.9.3 install failed. Please install Ruby manually: http://rubyinstaller.org/"
       ${EndIf}
       ; delete the ruby one click installer
-      Delete "rubyinstaller-1.8.7-p352.exe"
+      Delete "rubyinstaller-1.9.3-p0.exe"
     ${Else}
-      Delete "rubyinstaller-1.8.7-p352.exe"
+      Delete "rubyinstaller-1.9.3-p0.exe"
       ; ruby download not successfull
       MessageBox MB_OK "Ruby download failed. Please download and install Ruby manually: http://rubyinstaller.org/"
     ${EndIf}
@@ -128,7 +128,7 @@ Section "Dradis Framework Core" SEC02
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ;readRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CE65B110-8786-47EA-A4A0-05742F29C221}_is1" "Inno Setup: App Path"
   ${If} $0 == ''
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. No shortcuts to start the Dradis Framework will not be created. Start Dradis from the commandline: cd $INSTDIR; server.bat"
+    MessageBox MB_OK "Ruby 1.9.3 is not installed. No shortcuts to start the Dradis Framework will not be created. Start Dradis from the commandline: cd $INSTDIR; server.bat"
   ${Else}
     # create shortcuts to start the dradis server from the start menu or install directory
     CreateShortCut "$SMPROGRAMS\Dradis Framework\start server.lnk" "$INSTDIR\server.bat" "" "$INSTDIR\images\dradis.ico"
@@ -136,7 +136,7 @@ Section "Dradis Framework Core" SEC02
   ${EndIf}
 SectionEnd
 
-Section "SQLite3 1.3.3" SEC03
+Section "SQLite3 1.3.5" SEC03
   # check if ruby is installed and install the gem gem locally if so
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
@@ -146,38 +146,38 @@ Section "SQLite3 1.3.3" SEC03
     ; sqlite dll is dependant on msvcrt dll
     File "misc\dlls\msvcrt.dll"
     SetOutPath "$INSTDIR\dlls"
-    File "misc\gems\sqlite3-1.3.3-x86-mingw32.gem"
+    File "misc\gems\sqlite3-1.3.5-x86-mingw32.gem"
 
     StrCpy $1 ''
     ; install the wxruby locally
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-1.3.3-x86-mingw32.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri sqlite3-1.3.5-x86-mingw32.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.3) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the sqlite3-ruby (version 1.3.5) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.3) gem manually"
+    MessageBox MB_OK "Ruby 1.9.3 is not installed. Please install ruby and then run the installer again or install the sqlite3-ruby (version 1.3.5) gem manually"
   ${EndIf}
-  Delete "sqlite3-1.3.3-x86-mingw32.gem"
+  Delete "sqlite3-1.3.5-x86-mingw32.gem"
 SectionEnd
 
-Section "Bundler 1.0.12" SEC04
+Section "Bundler 1.0.21" SEC04
   SetOutPath "$INSTDIR\"
-  File "misc\gems\bundler-1.0.12.gem"
+  File "misc\gems\bundler-1.0.21.gem"
   # check if ruby is installed and install the Bundler gem locally if so
   readRegStr $0 HKLM "${RUBYINSTALLER_KEY}" InstallLocation
   ${If} $0 != ''
     ; ruby installed
     StrCpy $1 ''
-    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.12.gem' $1
+    ExecWait '"$0\bin\gem.bat" install --no-rdoc --no-ri bundler-1.0.21.gem' $1
     ${If} $1 == ''
-      MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.12) gem manually"
+      MessageBox MB_OK "Gem install failed. Please install the bundler (version 1.0.21) gem manually"
     ${EndIf}
   ${Else}
     ; ruby not installed
-    MessageBox MB_OK "Ruby 1.8.7 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.12) gem manually"
+    MessageBox MB_OK "Ruby 1.9.3 is not installed. Please install ruby and then run the installer again or install the bundler (version 1.0.21) gem manually"
   ${EndIf}
-  Delete "bundler-1.0.12.gem"
+  Delete "bundler-1.0.21.gem"
 SectionEnd
 
 Section "Rake 0.9.2" SEC05
@@ -206,21 +206,21 @@ Section "Ruby DevKit" SEC06
 
   MessageBox MB_OK 'The Ruby DevKit installer will now be downloaded and executed.'
   ; download and install ruby DevKit
-  NSISdl::download /NOIEPROXY "http://cloud.github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe" "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+  NSISdl::download /NOIEPROXY "http://cloud.github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe" "DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe"
   Pop $R0
   ${If} $R0 == 'success'
     ; ruby download successful
     StrCpy $0 ''
     ; rum the one click installer
-    ExecWait '"DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe" -o"$INSTDIR\DevKit" -y' $0
+    ExecWait '"DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe" -o"$INSTDIR\DevKit" -y' $0
     ${If} $0 == ''
       ; execution of DevKit failed
       MessageBox MB_OK "Ruby DevKit install failed. Please install the Ruby DevKit manually: http://rubyinstaller.org/"
     ${EndIf}
     ; delete the ruby DevKit installer
-    Delete "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+    Delete "DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe"
   ${Else}
-    Delete "DevKit-tdm-32-4.5.2-20110712-1620-sfx.exe"
+    Delete "DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe"
     ; ruby DevKit download not successfull
     MessageBox MB_OK "Ruby DevKit download failed. Please download and install the Ruby DevKit manually: http://rubyinstaller.org/"
   ${EndIf}
@@ -267,12 +267,12 @@ FunctionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.8.7 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installs Ruby 1.9.3 runtime. The installer will download the Ruby One-Click installer and execute it. Alternatively you can install Ruby manually: http://rubyinstaller.org"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installs Dradis core components."
   ; TODO: Maybe we can rely on Bundler to install SQLite3?
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Install SQLite3 and the sqlite3-ruby gem. This library requires Ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the RedCloth gem (for note formatting). The library requires Ruby to be installed."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installs the Bundler to manage Ruby dependencies. The library requires Ruby to be installed."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installs the Rake gem (to run tasks, similar to GNU Make). The library requires Ruby to be installed."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Ruby DevKit, required to compile some Ruby gems with native code"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -287,7 +287,7 @@ Function DradisReset
     StrCpy $1 ''
     ExecWait '"$INSTDIR\reset.bat"' $1
   ${Else}
-    MessageBox MB_OK "Ruby is not installed. After you install Ruby 1.8.7 use the Start menu link to reset the Dradis environment."
+    MessageBox MB_OK "Ruby is not installed. After you install Ruby 1.9.3 use the Start menu link to reset the Dradis environment."
   ${EndIf}
 
 FunctionEnd
