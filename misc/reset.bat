@@ -2,7 +2,7 @@
 title Dradis Framework: Resetting the environment...
 
 ::If the script doesn't work, uncomment and adjust the following:
-::set PATH=c:\Ruby187\bin;%PATH%
+::set PATH=c:\Ruby193\bin;%PATH%
 
 set RAILS_ENV=production
 set BASE=%~dp0
